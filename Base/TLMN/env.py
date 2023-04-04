@@ -21,7 +21,7 @@ def render(Agent, per_data, level, *args, max_temp_frame=100):
     return __render.render()
 
 def get_data_from_visualized_match():
-    if "_render" not in globals():
+    if "__render" not in globals():
         print("Nothing to get, visualize the match before running this function")
         return None
     else:
