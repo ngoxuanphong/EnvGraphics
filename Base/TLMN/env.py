@@ -1,8 +1,11 @@
 from Base.TLMN import _env as __env
-from Base.TLMN._render import Render as __Render
+from render_template import Render as __Render, import_files as __import_files
 from numba.core.errors import NumbaPendingDeprecationWarning as __NumbaPendingDeprecationWarning
 import warnings as __warnings
 __warnings.simplefilter("ignore", __NumbaPendingDeprecationWarning)
+
+
+__import_files("TLMN")
 
 
 getValidActions = __env.getValidActions

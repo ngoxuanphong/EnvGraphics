@@ -1,8 +1,21 @@
 import ipywidgets as widgets
 import numpy as np
 import math
-from Base.TLMN import _env, _render_func
 from IPython.display import display, clear_output
+import importlib.util
+from setup import SHORT_PATH
+
+
+def import_files(game_name):
+    spec = importlib.util.spec_from_file_location('_env', f"{SHORT_PATH}Base/{game_name}/_env.py")
+    global _env
+    _env = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(_env)
+
+    spec_1 = importlib.util.spec_from_file_location('_render_func', f"{SHORT_PATH}Base/{game_name}/_render_func.py")
+    global _render_func
+    _render_func = importlib.util.module_from_spec(spec_1)
+    spec_1.loader.exec_module(_render_func)
 
 
 class Render:
