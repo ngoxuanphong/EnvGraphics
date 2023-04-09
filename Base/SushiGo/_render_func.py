@@ -4,7 +4,7 @@ from setup import SHORT_PATH
 from Base.SushiGo import _env
 IMG_PATH = SHORT_PATH + "Base/SushiGo/playing_card_images/"
 BG_SIZE = (1680, 720)
-CARD_SIZE = (80, 112)
+CARD_SIZE = (160, 240)
 
 
 action_description = {
@@ -66,6 +66,7 @@ def get_main_player_state(env_components: Env_components, list_agent, list_data,
     turn = env_components.env[1]
     check_end_game = False
     
+    check_break = True
     while turn<7*3:
         round = env_components.env[0]-1
         turn = env_components.env[1]
@@ -76,6 +77,7 @@ def get_main_player_state(env_components: Env_components, list_agent, list_data,
             count = 0
             while player_state[-1] +  player_state[-2] > 0:
                 if env_components.list_other[idx] == -1:
+                    check_break = False
                     break
                 agent = list_agent[env_components.list_other[idx]-1]
                 data = list_data[env_components.list_other[idx]-1]
@@ -83,6 +85,10 @@ def get_main_player_state(env_components: Env_components, list_agent, list_data,
                 env_components.list_action[idx][count] = action
                 count += 1
                 player_state = _env.test_action(player_state,action)
+            if check_break == False:
+                break
+        if check_break == False:
+            break
         env_components.env = _env.stepEnv(env_components.env,env_components.list_action,amount_player,turn,round)
 
         if turn % 7 == 0:
@@ -124,7 +130,7 @@ class Sprites:
     def __init__(self) -> None:
         self.background = Image.open(IMG_PATH+"background.png").resize(BG_SIZE)
         card_values = ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A", "2"]
-        card_suits = ["Spade", "Club", "Diamond", "Heart"]
+        card_suits = ["Spade"]
         self.cards = []
         for value in card_values:
             for suit in card_suits:
@@ -136,9 +142,67 @@ class Sprites:
         self.faded_card_back = br.enhance(0.5)
         ct = ImageEnhance.Contrast(self.faded_card_back)
         self.faded_card_back = ct.enhance(0.5)
+
+class Params:
+    def __init__(self) -> None:
+        self.center_card_x = BG_SIZE[0] * 0.5
+        self.center_card_y = (BG_SIZE[1] - CARD_SIZE[1]) * 0.5
+        self.list_coords_0 = [
+            (self.center_card_x, 0.92*BG_SIZE[1] - CARD_SIZE[1]),
+            (0.82*BG_SIZE[0], self.center_card_y),
+            (self.center_card_x, 0.08*BG_SIZE[1]),
+            (0.18*BG_SIZE[0], self.center_card_y)
+        ]
+
+        x_0 = BG_SIZE[0] * 0.32
+        x_1 = BG_SIZE[0] * 0.68
+        y_0 = 0.2*BG_SIZE[1] - 0.25*CARD_SIZE[1]
+        y_1 = 0.8*BG_SIZE[1] - 0.75*CARD_SIZE[1]
+        self.list_coords_1 = [(x_0, y_1), (x_1, y_1), (x_1, y_0), (x_0, y_0)]
+
+params = Params()
 sprites = Sprites()
 
+def draw_cards(bg, cards, s, y, back=False, faded=False):
+    n = cards.shape[0]
+    y = round(y)
+    if back:
+        if faded:
+            im = sprites.faded_card_back
+        else:
+            im = sprites.card_back
+
+        for i in range(n):
+            bg.paste(im, (round(s+_d_*i), y))
+    else:
+        id_card = 1
+        for card in range(12):
+            total_cards = cards[card]
+            while total_cards > 0:
+                bg.paste(sprites.cards[card], (round(s+_d_*id_card), y))
+                total_cards -= 1
+                id_card += 1
+
+_d_ = CARD_SIZE[0] * 0.2
 def get_state_image(state=None):
     background = sprites.background.copy()
     if state is None:
+        return background
+    else:
+        n = np.sum(state[2:14])
+        w = CARD_SIZE[0] + _d_ * (n-1)
+        s = params.list_coords_0[0][0] - 0.5*w  
+        print((round(s+_d_*1), int(params.list_coords_0[0][1])))
+        print(state[2:14])
+        draw_cards(background, state[2:14], s, params.list_coords_0[0][1])
+
+    # list_cards_played = np.array_split(cards_played, 4)
+    for k in range(4):
+        # n = list_cards_played[k].shape[0]
+        list_cards_played = state[14*(k+1):14*(k+1)+14]
+        n = np.sum(list_cards_played)
+        w = CARD_SIZE[0] + _d_ * (n-1)
+        s = params.list_coords_1[k][0] - 0.5*w
+        draw_cards(background, list_cards_played, s, params.list_coords_1[k][1])
+
         return background
