@@ -221,5 +221,5 @@ def get_state_image(state=None):
         s = params.list_coords_1[k][0] - 0.5*w
         draw_cards(background, list_cards_played, s, params.list_coords_1[k][1])
 
-        ImageDraw.Draw(background).text(params.score_coords[k], f"{score}|{count_puding}", fill=(255, 255, 255), anchor="mm", font=ImageFont.truetype("arial.ttf", 60))
+        ImageDraw.Draw(background).text(params.score_coords[k], f"{score}|{count_puding}", fill=(255, 255, 255), anchor="mm", font=ImageFont.truetype("Base/SushiGo/font/FreeMonoBoldOblique.ttf", 60))
     return background
