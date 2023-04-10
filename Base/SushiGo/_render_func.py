@@ -1,10 +1,10 @@
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageDraw, ImageFont
 import numpy as np
 from setup import SHORT_PATH
 from Base.SushiGo import _env
 IMG_PATH = SHORT_PATH + "Base/SushiGo/playing_card_images/"
 BG_SIZE = (1680, 720)
-CARD_SIZE = (80, 112)
+CARD_SIZE = (100, 140)
 
 
 action_description = {
@@ -30,9 +30,11 @@ class Env_components:
         self.list_action = np.full((5, 3), 13)
         self.winner = winner
         self.list_other = list_other
-        self.idx = 0
+        self.idx = -1
         self.turn = turn
         self.round = round
+        self.count = 0
+        self.state = None
 
 
 def get_description(action):
@@ -60,31 +62,71 @@ def get_main_player_state(env_components: Env_components, list_agent, list_data,
     amount_player = 5
     if not action is None:
         env_components.list_action[env_components.idx][env_components.count] = action
-        env_components.env = _env.stepEnv(env_components, env_components.list_action, amount_player, env_components.turn, env_components.round)
-
+        #print(env_components.turn, env_components.round, env_components.idx, env_components.count)
+        #print(env_components.list_action)
+        if env_components.idx == 4:
+            env_components.env = _env.stepEnv(env_components.env,env_components.list_action,5,env_components.turn, env_components.round)
+            env_components.list_action = np.full((amount_player, 3), 13)
+        # _env.getAgentState(env_components.env,idx)
+        # player_state = _env.test_action(player_state,action)
 
     turn = env_components.env[1]
     check_end_game = False
     
+    check_break = True
     while turn<7*3:
-        round = env_components.env[0]-1
         turn = env_components.env[1]
-        env_components.list_action = np.full((amount_player, 3), 13)
-        for idx in range(amount_player):
+        round = env_components.env[0]-1
+        env_components.turn = turn
+        env_components.round = round
+        if env_components.idx == 4:
+            env_components.idx = -1
+        # if turn % 7 == 0:
+        #     env_components.list_action = np.full((amount_player, 3), 13)
+
+        check_use_chopsticks = False
+        if env_components.list_other[env_components.idx] == -1:
+            if 12 in env_components.list_action[env_components.idx] and env_components.count != 2:
+                check_use_chopsticks = True
+                env_components.idx -= 1
+            if env_components.count == 2:
+                env_components.count = 0
+                env_components.state = None
+
+        for idx in range(env_components.idx + 1, amount_player):
             env_components.idx = idx
             player_state = _env.getAgentState(env_components.env,idx)
-            count = 0
+            count = env_components.count
             while player_state[-1] +  player_state[-2] > 0:
                 if env_components.list_other[idx] == -1:
+                    check_break = False
+                    if check_use_chopsticks:
+                        #print('Use chopsticks')
+                        #print(player_state[14:28])
+                        if action == 12:
+                            env_components.state = player_state
+                        player_state = _env.test_action(env_components.state,action)
+                        #print(player_state[14:28])
+                        env_components.state = player_state
+                        env_components.count += 1
+
                     break
                 agent = list_agent[env_components.list_other[idx]-1]
                 data = list_data[env_components.list_other[idx]-1]
                 action, data = agent(player_state, data)
                 env_components.list_action[idx][count] = action
                 count += 1
+                env_components.count = count
                 player_state = _env.test_action(player_state,action)
-        env_components.env = _env.stepEnv(env_components.env,env_components.list_action,amount_player,turn,round)
 
+            # env_components.idx += 1
+            if check_break == False:
+                break
+            env_components.count = 0
+        if check_break == False:
+            break
+        env_components.env = _env.stepEnv(env_components.env,env_components.list_action,amount_player,turn,round)
+        env_components.list_action = np.full((amount_player, 3), 13)
         if turn % 7 == 0:
             env_components.env = _env.caculater_score(env_components.env,amount_player)
             if env_components.env[0] < 3:
@@ -95,17 +137,18 @@ def get_main_player_state(env_components: Env_components, list_agent, list_data,
         if turn <= 7*3:
             env_components.env[1] += 1
 
+    if check_break == True:
+        check_end_game = True
     env_components.winner = _env.winner_victory(env_components.env)
 
     if check_end_game == False:
-        state = _env.getAgentState(env_components.env,env_components.idx)
         win = -1
     else:
         my_idx = np.where(env_components.list_other == -1)[0][0]
         env = env_components.env.copy()
 
-        state = _env.getAgentState(env_components.env,env_components.idx)
-        if my_idx == env_components.winner:
+        player_state = _env.getAgentState(env_components.env,env_components.idx)
+        if my_idx in env_components.winner:
             win = 1
         else:
             win = 0
@@ -118,27 +161,65 @@ def get_main_player_state(env_components: Env_components, list_agent, list_data,
                 data = list_data[env_components.list_other[idx]-1]
                 action, data = agent(_state, data)
 
-    return win, state, env_components
+    return win, player_state, env_components
 
 class Sprites:
     def __init__(self) -> None:
-        self.background = Image.open(IMG_PATH+"background.png").resize(BG_SIZE)
+        self.background = Image.open(IMG_PATH+"bg.jpg").resize(BG_SIZE)
         card_values = ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A", "2"]
-        card_suits = ["Spade", "Club", "Diamond", "Heart"]
+        card_suits = ["Spade"]
         self.cards = []
         for value in card_values:
             for suit in card_suits:
                 self.cards.append(Image.open(IMG_PATH+f"{value}-{suit}.png").resize(CARD_SIZE))
 
-        self.card_back = Image.open(IMG_PATH+"Card_back.png").resize(CARD_SIZE)
-        self.faded_card_back = self.card_back.copy()
-        br = ImageEnhance.Brightness(self.faded_card_back)
-        self.faded_card_back = br.enhance(0.5)
-        ct = ImageEnhance.Contrast(self.faded_card_back)
-        self.faded_card_back = ct.enhance(0.5)
+class Params:
+    def __init__(self) -> None:
+        self.center_card_x = BG_SIZE[0] * 0.5
+        self.center_card_y = (BG_SIZE[1] - CARD_SIZE[1]) * 0.35
+
+        x_0 = BG_SIZE[0] * 0.1
+        x_1 = BG_SIZE[0] * 0.9
+        y_0 = 0.1*BG_SIZE[1] - 0.25*CARD_SIZE[1]
+        y_1 = 0.9*BG_SIZE[1] - 0.75*CARD_SIZE[1]
+        x_center =  BG_SIZE[0] * 0.5
+        y_center =  0.9*BG_SIZE[1] - 0.75*CARD_SIZE[1]
+        self.list_coords_1 = [(x_center, y_center), (x_0, y_1), (x_1, y_1), (x_1, y_0), (x_0, y_0)]
+
+        self.score_coords = [(x_center, y_center*0.9), (x_0, y_1*0.9), (x_1, y_1*0.9), (x_1, y_0*6), (x_0, y_0*6)]
+
+params = Params()
 sprites = Sprites()
 
+def draw_cards(bg, cards, s, y):
+    y = round(y)
+    id_card = 1
+    for card in range(12):
+        total_cards = cards[card]
+        while total_cards > 0:
+            bg.paste(sprites.cards[card], (round(s+_d_*id_card), y))
+            total_cards -= 1
+            id_card += 1
+
+_d_ = CARD_SIZE[0] * 0.2
 def get_state_image(state=None):
     background = sprites.background.copy()
     if state is None:
         return background
+    else:
+        n = np.sum(state[2:14])
+        w = CARD_SIZE[0] + _d_ * (n-1)
+        s = params.center_card_x - 0.5*w
+        draw_cards(background, state[2:14], s, params.center_card_y)
+
+    for k in range(5):
+        list_cards_played = state[14*(k+1)+2:14*(k+2)]
+        score = int(state[14*(k+1)])
+        count_puding = int(state[14*(k+1)+1])
+        n = np.sum(list_cards_played)
+        w = CARD_SIZE[0] + _d_ * (n-1)
+        s = params.list_coords_1[k][0] - 0.5*w
+        draw_cards(background, list_cards_played, s, params.list_coords_1[k][1])
+
+        ImageDraw.Draw(background).text(params.score_coords[k], f"{score}|{count_puding}", fill=(255, 255, 255), anchor="mm", font=ImageFont.truetype("Base/SushiGo/font/FreeMonoBoldOblique.ttf", 60))
+    return background
