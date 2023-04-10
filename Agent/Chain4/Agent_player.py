@@ -58,7 +58,7 @@ def DataAgent():
     return perData
 
 
-@njit()
+#@njit()
 def encode(arr_chain):
     res = 0
     for i in range(arr_chain.shape[0]):
@@ -67,7 +67,7 @@ def encode(arr_chain):
     return res
 
 
-@njit()
+#@njit()
 def Train(state, perData):
     count_match = perData[0][0]
     action_history = perData[0][1]
@@ -192,7 +192,7 @@ def Train(state, perData):
         return action, perData
 
 
-@njit()
+#@njit()
 def Test(state, perData):
     per_bias = perData[2]
     action_history = perData[0][1]

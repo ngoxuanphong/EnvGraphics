@@ -34,7 +34,7 @@ def DataAgent():
            ])
     return per
 
-@njit()
+#@njit()
 def Train(state,per):
     actions = getValidActions(state)
     weights = np.zeros(getActionSize())
@@ -62,7 +62,7 @@ def Train(state,per):
             per[2][0][0][0] = 0
     return action, per
 
-@njit
+#@njit
 def Test(state, per):
     state_int = state.astype(np.int64)
     stateSize = getStateSize()

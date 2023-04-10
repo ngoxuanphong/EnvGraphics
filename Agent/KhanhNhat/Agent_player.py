@@ -36,7 +36,7 @@ def DataAgent():
     return perx_
 
 
-@njit
+#@njit
 def Train(state, per):
     weight = per[3][0]
     np.random.shuffle(weight)
@@ -71,7 +71,7 @@ def Train(state, per):
     return action, per
 
 
-@njit
+#@njit
 def Test(state, per):
     state_int = state.astype(np.int64)
     stateSize = getStateSize()

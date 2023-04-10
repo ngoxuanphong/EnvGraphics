@@ -166,12 +166,10 @@ def get_main_player_state(env_components: Env_components, list_agent, list_data,
 class Sprites:
     def __init__(self) -> None:
         self.background = Image.open(IMG_PATH+"bg.jpg").resize(BG_SIZE)
-        card_values = ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A", "2"]
-        card_suits = ["Spade"]
+        card_values = ["temura", "sashimi", "dumpling", "1maki", "2maki", "3maki", "salmon", "squid", "egg", "pudding", "wasabi", "chopsticks"]
         self.cards = []
         for value in card_values:
-            for suit in card_suits:
-                self.cards.append(Image.open(IMG_PATH+f"{value}-{suit}.png").resize(CARD_SIZE))
+            self.cards.append(Image.open(IMG_PATH+f"{value}.jpg").resize(CARD_SIZE))
 
 class Params:
     def __init__(self) -> None:
@@ -179,10 +177,10 @@ class Params:
         self.center_card_y = (BG_SIZE[1] - CARD_SIZE[1]) * 0.35
 
         x_0 = BG_SIZE[0] * 0.1
-        x_1 = BG_SIZE[0] * 0.9
+        x_1 = BG_SIZE[0] * 0.8
         y_0 = 0.1*BG_SIZE[1] - 0.25*CARD_SIZE[1]
         y_1 = 0.9*BG_SIZE[1] - 0.75*CARD_SIZE[1]
-        x_center =  BG_SIZE[0] * 0.5
+        x_center =  BG_SIZE[0] * 0.45
         y_center =  0.9*BG_SIZE[1] - 0.75*CARD_SIZE[1]
         self.list_coords_1 = [(x_center, y_center), (x_0, y_1), (x_1, y_1), (x_1, y_0), (x_0, y_0)]
 
@@ -201,7 +199,7 @@ def draw_cards(bg, cards, s, y):
             total_cards -= 1
             id_card += 1
 
-_d_ = CARD_SIZE[0] * 0.2
+_d_ = CARD_SIZE[0] * 0.8
 def get_state_image(state=None):
     background = sprites.background.copy()
     if state is None:
