@@ -49,6 +49,10 @@ def get_env_components():
     winner = _env.winner_victory(env)
     list_other = np.array([-1, 1, 2, 3, 4])
     np.random.shuffle(list_other)
+    while list_other[-1] == -1:
+        # print(list_other, 'change')
+        np.random.shuffle(list_other)
+    # print(list_other)
     turn = env[1]
     round = env[0]-1
     env_components = Env_components(env, winner, list_other, turn, round)
