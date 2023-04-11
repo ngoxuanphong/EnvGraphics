@@ -77,7 +77,7 @@ def getAgentState(state_sys,index_player):
     return state_player.astype(np.float64)
 
 #@njit()
-def caculater_for_one(card):
+def calculator_for_one(card):
     score_dumpling = [0,1,3,6,10,15]
     score = card[0]
     card = card[2:]
@@ -126,7 +126,7 @@ def get_index(arr,first,second):
     return np.where(arr == first)[0],np.where(arr == second)[0]
 
 #@njit()
-def caculator_pudding(state_sys,amount_player):
+def calculator_pudding(state_sys,amount_player):
     amount_player = state_sys[2]
     arr_pudding = np.array([0 for i in range(amount_player)])
     for index_player_relative in range(0, amount_player):
@@ -145,7 +145,7 @@ def caculator_pudding(state_sys,amount_player):
     return state_sys
 
 #@njit()
-def caculater_score(state_sys,amount_player):
+def calculator_score(state_sys,amount_player):
     amount_player = state_sys[2]
     round = state_sys[0] - 1
     arr_maki = np.array([0 for i in range(amount_player)])
@@ -155,7 +155,7 @@ def caculater_score(state_sys,amount_player):
             index_start_player_s = (index_player_relative) * 7 + 3*amount_player*7 + (index_player_relative+1) *2 +1
             index_end_player_s = (index_player_relative+1) * 7 + 3*amount_player*7 + (index_player_relative+2)*2 +1
             card = state_sys[index_start_player_s:index_end_player_s]
-            state_sys[index_start_player_s],puding = caculater_for_one(card)
+            state_sys[index_start_player_s],puding = calculator_for_one(card)
             state_sys[index_start_player_s+1] += puding
             c_maki = count_maki(card)
             arr_maki[index_player_relative] = c_maki
@@ -283,86 +283,6 @@ def move_card_step(state,card,start_1 = 0,end_1=0,start_2 = 0,end_2 = 0):
     state[index_relative_to] = temp
     return state
 
-def one_game_print(list_player,per_file):
-    amount_player = len(list_player)
-    state_sys = initEnv(amount_player)
-    temp_file = [[0] for i in range(amount_player)]
-    amount_player = state_sys[2]
-    turn = state_sys[1]
-
-    while turn<7*3:
-        round = state_sys[0]-1
-        turn = state_sys[1]
-        print("Luot: ",turn,state_sys)
-        list_action = [[13,13,13] for i in range(amount_player)]
-        for id_player in range(len(list_player)):
-            player_state = getAgentState(state_sys,id_player)
-
-            print(player_state)
-            count = 0
-            while player_state[-1] +  player_state[-2] > 0:
-                print(list_action[id_player])
-                action, per_file = list_player[id_player](player_state,per_file)
-                list_action[id_player][count] = action
-                count += 1
-                player_state = test_action(player_state,action)
-            player_state = getAgentState(state_sys,id_player)
-            print(id_player,player_state)
-        list_action = np.array(list_action)
-        print(list_action)
-        state_sys = stepEnv(state_sys,list_action,amount_player,turn,round)
-        if turn % 7 == 0:
-            state_sys = caculater_score(state_sys,amount_player)
-            if state_sys[0] < 3:
-                state_sys[0] += 1
-                state_sys = reset_card_player(state_sys)
-        if turn == 7*3:
-            state_sys = caculator_pudding(state_sys,amount_player)
-        if turn <= 7*3:
-            state_sys[1] += 1
-        print(state_sys)
-    # print(state_sys)
-    for id_player in range(len(list_player)):
-        list_action[id_player], per_file = list_player[id_player](getAgentState(state_sys,id_player),per_file)    
-    winner = winner_victory(state_sys)
-    return winner,per_file
-
-def one_game(list_player,per_file):
-    amount_player = 5
-    state_sys = initEnv(amount_player)
-    amount_player = state_sys[2]
-    turn = state_sys[1]
-
-    while turn<7*3:
-        round = state_sys[0]-1
-        turn = state_sys[1]
-        list_action = [[13,13,13] for i in range(amount_player)]
-        for id_player in range(5):
-            player_state = getAgentState(state_sys,id_player)
-
-            count = 0
-            while player_state[-1] +  player_state[-2] > 0:
-                action, per_file = list_player[id_player](player_state,per_file)
-                list_action[id_player][count] = action
-                count += 1
-                player_state = test_action(player_state,action)
-            player_state = getAgentState(state_sys,id_player)
-        list_action = np.array(list_action)
-        state_sys = stepEnv(state_sys,list_action,amount_player,turn,round)
-        if turn % 7 == 0:
-            state_sys = caculater_score(state_sys,amount_player)
-            if state_sys[0] < 3:
-                state_sys[0] += 1
-                state_sys = reset_card_player(state_sys)
-        if turn == 7*3:
-            state_sys = caculator_pudding(state_sys,amount_player)
-        if turn <= 7*3:
-            state_sys[1] += 1
-
-    for id_player in range(5):
-        list_action[id_player], per_file = list_player[id_player](getAgentState(state_sys,id_player),per_file)    
-    winner = winner_victory(state_sys)
-    return winner,per_file
 
 #@njit()
 def getActionSize():
@@ -400,35 +320,6 @@ def getValidActions(player_state_origin:np.int64):
 
     return list_action_return.astype(np.float64)
 
-def player_random(player_state,file_temp,file_per):
-    a = getValidActions(player_state)
-    b = random.randint(0,len(a)-1)
-    return a[b],file_temp,file_per
-
-def normal_main(list_player,amount_game,file_per):
-    amount_player = len(list_player)
-    player_list_index = [ i for i in range(amount_player)]
-    num_won = [0 for i in range(amount_player)]
-    for game in range(amount_game):
-        random.shuffle(player_list_index)
-        list_player_shuffle = [list_player[i] for i in player_list_index]
-        winner, file_per = one_game(list_player_shuffle,file_per)
-        # print(list_player_shuffle, winner, player_list_index)
-        for win in winner:
-            num_won[player_list_index[win]] += 1
-    return num_won,file_per
-
-def normal_main_print(list_player,amount_game,file_per):
-    amount_player = len(list_player)
-    player_list_index = [ i for i in range(amount_player)]
-    num_won = [0 for i in range(amount_player)]
-    for game in range(amount_game):
-        random.shuffle(player_list_index)
-        list_player_shuffle = [list_player[i] for i in player_list_index]
-        winner, file_per = one_game_print(list_player_shuffle,file_per)
-        for win in winner:
-            num_won[player_list_index[win]] += 1
-    return num_won,file_per
 
 
 
@@ -467,12 +358,12 @@ def one_game_numba(p0, list_other, per_player, per1, per2, per3, per4, p1, p2, p
             # player_state = getAgentState(state_sys,idx)
         state_sys = stepEnv(state_sys,list_action,amount_player,turn,round)
         if turn % 7 == 0:
-            state_sys = caculater_score(state_sys,amount_player)
+            state_sys = calculator_score(state_sys,amount_player)
             if state_sys[0] < 3:
                 state_sys[0] += 1
                 state_sys = reset_card_player(state_sys)
         if turn == 7*3:
-            state_sys = caculator_pudding(state_sys,amount_player)
+            state_sys = calculator_pudding(state_sys,amount_player)
         if turn <= 7*3:
             state_sys[1] += 1
 
@@ -539,12 +430,12 @@ def one_game_normal(p0, list_other, per_player, per1, per2, per3, per4, p1, p2, 
             player_state = getAgentState(state_sys,idx)
         state_sys = stepEnv(state_sys,list_action,amount_player,turn,round)
         if turn % 7 == 0:
-            state_sys = caculater_score(state_sys,amount_player)
+            state_sys = calculator_score(state_sys,amount_player)
             if state_sys[0] < 3:
                 state_sys[0] += 1
                 state_sys = reset_card_player(state_sys)
         if turn == 7*3:
-            state_sys = caculator_pudding(state_sys,amount_player)
+            state_sys = calculator_pudding(state_sys,amount_player)
         if turn <= 7*3:
             state_sys[1] += 1
 

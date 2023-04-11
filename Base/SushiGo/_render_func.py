@@ -129,12 +129,12 @@ def get_main_player_state(env_components: Env_components, list_agent, list_data,
         env_components.env = _env.stepEnv(env_components.env,env_components.list_action,amount_player,turn,round)
         env_components.list_action = np.full((amount_player, 3), 13)
         if turn % 7 == 0:
-            env_components.env = _env.caculater_score(env_components.env,amount_player)
+            env_components.env = _env.calculator_score(env_components.env,amount_player)
             if env_components.env[0] < 3:
                 env_components.env[0] += 1
                 env_components.env = _env.reset_card_player(env_components.env)
         if turn == 7*3:
-            env_components.env = _env.caculator_pudding(env_components.env,amount_player)
+            env_components.env = _env.calculator_pudding(env_components.env,amount_player)
         if turn <= 7*3:
             env_components.env[1] += 1
 
