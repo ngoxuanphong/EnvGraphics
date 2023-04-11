@@ -41,9 +41,6 @@ def get_description(action):
     if action < 0 or action >= _env.getActionSize():
         return ""
 
-    if action == 0:
-        return "Skip"
-
     return f"{action_description[action]}"
 
 
