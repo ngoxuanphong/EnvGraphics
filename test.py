@@ -1,4 +1,79 @@
-from setup import make
-from Base.TLMN._env import bot_lv0
-env = make("TLMN")
-env.render(Agent="human", per_data=[0], level=0, max_temp_frame=100)
+import json
+actions = {0: "Dừng lấy công cụ",
+    1: "Đặt 1 người",
+    2: "Đặt 2 người",
+    3: "Đặt 3 người",
+    4: "Đặt 4 người",
+    5: "Đặt 5 người",
+    6: "Đặt 6 người",
+    7: "Đặt 7 người",
+    8: "Đặt 8 người",
+    9: "Đặt 9 người",
+
+    11: "Đặt người vào lúa",
+    12: "Đặt vào ô công cụ",
+    13: "Đặt vào ô sinh sản",
+    14: "Đặt vào khu gỗ",
+    15: "Đặt vào khu gạch",
+    16: "Đặt vào khu bạc",
+    17: "Đặt vào khu vàng",
+    18: "Đặt vào khu lương thực",
+
+    19: "Đặt người vào ô thẻ civ 0",
+    20: "Đặt người vào ô thẻ civ 1",
+    21: "Đặt người vào ô thẻ civ 2",
+    22: "Đặt người vào ô thẻ civ 3",
+    23: "Đặt người vào ô thẻ building 0",
+    24: "Đặt người vào ô thẻ building 1",
+    25: "Đặt người vào ô thẻ building 2",
+    26: "Đặt người vào ô thẻ building 3",
+
+
+    27: "Chọn trừ nguyên liệu (Khi đến hết vòng không đủ thức ăn)",
+    28: "Chọn trừ điểm (Khi đến hết vòng không đủ thức ăn)",
+
+    29: "Lấy người từ lúa",
+    30: "Lấy người từ công cụ",
+    31: "Lấy người từ sinh sản",
+    32: "Lấy người từ gỗ",
+    33: "Lấy người từ gạch",
+    34: "Lấy người từ bạc",
+    35: "Lấy người từ vàng",
+    36: "Lấy người từ lương thực",
+
+    37: "Dùng công cụ ở ô 1",
+    38: "Dùng công cụ ở ô 1",
+    39: "Dùng công cụ ở ô 1",
+
+    40: "Trả nguyên liêu gỗ",
+    41: "Trả nguyên liêu gạch",
+    42: "Trả nguyên liêu bạc",
+    43: "Trả nguyên liêu vàng",
+
+    44: "Dùng công cụ một lần 1",
+    45: "Dùng công cụ một lần 2",
+    46: "Dùng công cụ một lần 3",
+
+    47: "Dừng trả nguyên liệu khi mua thẻ build 1-7 (Thẻ build trả 1 đến 7 người để đổi ra điểm)",
+    48: "Lấy người từ ô thẻ civ 0",
+    49: "Lấy người từ ô thẻ civ 1",
+    50: "Lấy người từ ô thẻ civ 2",
+    51: "Lấy người từ ô thẻ civ 3",
+    52: "Lấy người từ ô thẻ building 0",
+    53: "Lấy người từ ô thẻ building 1",
+    54: "Lấy người từ ô thẻ building 2",
+    55: "Lấy người từ ô thẻ building 3",
+
+    57: "Chọn xúc xắc số 1",
+    58: "Chọn xúc xắc số 2",
+    59: "Chọn xúc xắc số 3",
+    60: "Chọn xúc xắc số 4",
+    61: "Chọn xúc xắc số 5",
+    62: "Chọn xúc xắc số 6",
+
+    63: "Chọn dùng thẻ lấy thêm 2 nguyên liệu từ thẻ civ",
+    64: "Trả nguyên liêu gỗ",
+    65: "Trả nguyên liêu gạch",
+    66: "Trả nguyên liêu bạc",
+    67: "Trả nguyên liêu vàng",
+    }

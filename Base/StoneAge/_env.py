@@ -204,7 +204,7 @@ E_PHASE = 403
 STATE_ENV_SIZE = E_PHASE + 11
 STATE_PLAYER_SIZE = P_PHASE + 11
 ALL_ACTION_SIZE = 68
-@njit()
+# @njit()
 def initEnv(BUILDING_CARDS, CIV_CARDS):
     all_build_card = np.zeros((4, 7))
     all_build_card[:, 0] = 1
@@ -236,7 +236,7 @@ def initEnv(BUILDING_CARDS, CIV_CARDS):
     env[E_PHASE] = 1
     return env, all_build_card.reshape((4,7)), all_civ_card
 
-@njit()
+# @njit()
 def getAgentState(env):
     p_state = np.zeros(STATE_PLAYER_SIZE)
     p_state[:P_ID_PLAYER] = env[69:E_ID_PLAYER] #Các thông tin ở trên bàn
@@ -270,14 +270,14 @@ def getAgentState(env):
 
     return p_state.astype(np.float64)
     
-@njit()
+# @njit()
 def RollDice(count_dice):
     total_of_dice = 0
     for i in range(count_dice):
         total_of_dice += np.random.randint(1, 7)
     return total_of_dice
 
-@njit()
+# @njit()
 def RollDiceUseTool(env, e_idp):
     id_warehouse = int(env[E_PULL_RECENT])
     # env[e_idp + 9:e_idp + 12] = np.abs(env[e_idp + 9:e_idp + 12]) #Trả lại công cụ như bình thường
@@ -299,7 +299,7 @@ def RollDiceUseTool(env, e_idp):
     env[E_PHASE + 2] = 1
     return env
 
-@njit()
+# @njit()
 def RollDiceGetRes(count_dice, env, id_warehouse, e_idp):
     total_of_dice = 0
     for i in range(count_dice):
@@ -314,7 +314,7 @@ def RollDiceGetRes(count_dice, env, id_warehouse, e_idp):
    ##print('Không có công cụ, Tổng số dice', total_of_dice, 'Nguyên liệu lấy', id_warehouse - 3, '---Lấy---:', count_source_take)
     return env
 
-@njit()
+# @njit()
 def GetScoreEndGame(env):
     for id_score in range(4):
         e_o_idp = int(E_ID_PLAYER + TOTAL_INDEX_PLAYER*id_score)
@@ -326,19 +326,19 @@ def GetScoreEndGame(env):
         env[e_o_idp] += np.sum(env[e_o_idp + 5:e_o_idp + 9])
     return env
 
-@njit()
+# @njit()
 def getAgentSize():
     return 4
 
-@njit()
+# @njit()
 def getActionSize():
     return 68
 
-@njit()
+# @njit()
 def getStateSize():
     return STATE_PLAYER_SIZE
 
-@njit()
+# @njit()
 def checkEnded(env):
     if env[82] == 0:
         return np.array([-1])
@@ -347,7 +347,7 @@ def checkEnded(env):
         return np.where(arr_score == np.max(arr_score))[0]
 
 
-@njit()
+# @njit()
 def getValidActions(p_state):
     p_state = p_state.astype(np.int64)
     list_action = np.zeros(ALL_ACTION_SIZE)
@@ -490,7 +490,7 @@ def getValidActions(p_state):
     
     return list_action.astype(np.float64)
 
-@njit()
+# @njit()
 def stepEnv(action, env, all_build_card, all_civ_card):
     action = int(action)
     phase = np.where(env[E_PHASE:] == 1)[0][0]
@@ -1105,7 +1105,7 @@ def stepEnv(action, env, all_build_card, all_civ_card):
     return env, all_build_card, all_civ_card
 
 
-@njit()
+# @njit()
 def getReward(p_state):
     p_state = p_state.astype(np.int64)
     if p_state[13] == 0:
@@ -1116,7 +1116,7 @@ def getReward(p_state):
         else:
             return 0
 
-@njit()
+# @njit()
 def one_game_numba(p0, list_other, per_player, per1, per2, per3, p1, p2, p3):
     env, all_build_card, all_civ_card = initEnv(BUILDING_CARDS, CIV_CARDS)
     _cc = 0
@@ -1168,7 +1168,7 @@ def one_game_numba(p0, list_other, per_player, per1, per2, per3, p1, p2, p3):
 
     return winner,  per_player
 
-@njit()
+# @njit()
 def n_games_numba(p0, num_game, per_player, list_other, per1, per2, per3, p1, p2, p3):
     win = 0
     for _ in range(num_game):
@@ -1257,23 +1257,17 @@ def load_module_player(player, game_name = None):
     return module
 
 
-@njit()
+# @njit()
 def bot_lv0(state, perData):
     validActions = getValidActions(state)
     arr_action = np.where(validActions==1)[0]
     idx = np.random.randint(0, arr_action.shape[0])
     return arr_action[idx], perData
 
-@njit()
-def check_run_under_njit(agent, perData):
-    return True
 
 
-def numba_main_2(p0, num_game, per_player, level, *args):
+def load_agent(level, *args):
     num_bot = getAgentSize() - 1
-    list_other = np.array([-1] + [i+1 for i in range(num_bot)])
-    try: check_njit = check_run_under_njit(p0, per_player)
-    except: check_njit = False
 
     if "_level_" not in globals():
         global _level_
@@ -1316,6 +1310,22 @@ def numba_main_2(p0, num_game, per_player, level, *args):
                     module_agent = load_module_player(lst_agent_level[i])
                     _list_per_level_.append(module_agent.convert_to_test(data_agent_level))
                 _list_bot_level_.append(module_agent.Test)
+
+    return _list_bot_level_, _list_per_level_
+
+
+## @njit()
+def check_run_under_njit(agent, perData):
+    return True
+
+
+def numba_main_2(p0, num_game, per_player, level, *args):
+    num_bot = getAgentSize() - 1
+    list_other = np.array([-1] + [i+1 for i in range(num_bot)])
+    try: check_njit = check_run_under_njit(p0, per_player)
+    except: check_njit = False
+
+    load_agent(level, *args)
 
     if check_njit:
         return n_games_numba(p0, num_game, per_player, list_other,

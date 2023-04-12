@@ -34,7 +34,7 @@ def DataAgent():
            ])
     return per
 
-#@njit()
+## @njit()
 def Train(state,per):
     actions = getValidActions(state)
     weights = np.zeros(getActionSize())
