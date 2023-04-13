@@ -4,7 +4,7 @@ from setup import SHORT_PATH
 from Base.SushiGo import _env
 IMG_PATH = SHORT_PATH + "Base/SushiGo/playing_card_images/"
 BG_SIZE = (1680, 720)
-CARD_SIZE = (100, 140)
+CARD_SIZE = (90, 130)
 
 
 action_description = {
@@ -65,17 +65,12 @@ def get_main_player_state(env_components: Env_components, list_agent, list_data,
         env_components.list_action[env_components.idx][env_components.count] = action
         #print(env_components.turn, env_components.round, env_components.idx, env_components.count)
         #print(env_components.list_action)
-        if env_components.idx == 4:
-            env_components.env = _env.stepEnv(env_components.env,env_components.list_action,5,env_components.turn, env_components.round)
-            env_components.list_action = np.full((amount_player, 3), 13)
-        # _env.getAgentState(env_components.env,idx)
-        # player_state = _env.test_action(player_state,action)
 
     turn = env_components.env[1]
     check_end_game = False
     
     check_break = True
-    while turn<7*3:
+    while turn<=7*3:
         turn = env_components.env[1]
         round = env_components.env[0]-1
         env_components.turn = turn
@@ -134,9 +129,11 @@ def get_main_player_state(env_components: Env_components, list_agent, list_data,
                 env_components.env[0] += 1
                 env_components.env = _env.reset_card_player(env_components.env)
         if turn == 7*3:
+            # print('Tính pudding')
             env_components.env = _env.calculator_pudding(env_components.env,amount_player)
         if turn <= 7*3:
             env_components.env[1] += 1
+            # print(env_components.env[1], turn)
 
     if check_break == True:
         check_end_game = True
@@ -149,6 +146,8 @@ def get_main_player_state(env_components: Env_components, list_agent, list_data,
         env = env_components.env.copy()
 
         player_state = _env.getAgentState(env_components.env,env_components.idx)
+        # print(player_state[:2], player_state[14:28])
+        # print(env_components.list_other, env_components.idx)
         if my_idx in env_components.winner:
             win = 1
         else:
@@ -177,7 +176,7 @@ class Params:
         self.center_card_x = BG_SIZE[0] * 0.5
         self.center_card_y = (BG_SIZE[1] - CARD_SIZE[1]) * 0.35
 
-        x_0 = BG_SIZE[0] * 0.1
+        x_0 = BG_SIZE[0] * 0.12
         x_1 = BG_SIZE[0] * 0.8
         y_0 = 0.1*BG_SIZE[1] - 0.25*CARD_SIZE[1]
         y_1 = 0.9*BG_SIZE[1] - 0.75*CARD_SIZE[1]

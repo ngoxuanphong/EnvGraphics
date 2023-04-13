@@ -4,13 +4,14 @@ from setup import SHORT_PATH
 from Base.StoneAge import _env
 BUILDING_CARDS, CIV_CARDS = _env.BUILDING_CARDS, _env.CIV_CARDS
 IMG_PATH = SHORT_PATH + "Base/StoneAge/playing_card_images/"
-CARD_SIZE = (100, 140)
-SIZE_BOARD = (1000, 1000)
+SIZE_BOARD = (1080, 607)
 
-tl = 3
+tl = 2
 BG_SIZE = (np.array([2585, 1821])/tl).astype(np.int64)
-BUILDING_CARDS_SIZE =(np.array([263, 314])/3.4).astype(np.int64)
-CIV_CARDS_SIZE =(np.array([335, 515])/3.4).astype(np.int64)
+SIZE_BOARD = (int(BG_SIZE[0]*16/9), BG_SIZE[1])
+BUILDING_CARDS_SIZE =(np.array([263, 314])/(tl + 0.1)).astype(np.int64)
+CIV_CARDS_SIZE =(np.array([335, 515])/(tl + 0.1)).astype(np.int64)
+ICON_SIZE = (np.array([120, 120])/tl).astype(np.int64)
 
 action_description = {
     0: "Dừng lấy công cụ",
@@ -117,45 +118,126 @@ def get_env_components():
 class Sprites:
     def __init__(self) -> None:
         self.background = Image.open(IMG_PATH+"board.webp").resize(BG_SIZE)
+
         self.cards_building = []
         for value in range(28):
-            self.cards_building.append(Image.open(f"{IMG_PATH}building_card/{value}.png").resize(BUILDING_CARDS_SIZE))
+            self.cards_building.append(Image.open(f"{IMG_PATH}building_card/{value}.png").resize(tuple(BUILDING_CARDS_SIZE)))
+
         self.card_civilization = []
         for value in range(36):
-            self.card_civilization.append(Image.open(f"{IMG_PATH}civ_card/{value}.png").resize(CIV_CARDS_SIZE))
-        self.people = Image.open(f"{IMG_PATH}icon/people.png")
-        self.font=ImageFont.truetype("Base/SushiGo/font/FreeMonoBoldOblique.ttf", 60)
-        self.list_color = ['blue', 'green', 'red', 'white']
+            self.card_civilization.append(Image.open(f"{IMG_PATH}civ_card/{value}.png").resize(tuple(CIV_CARDS_SIZE)))
 
+        self.font=ImageFont.truetype("Base/SushiGo/font/FreeMonoBoldOblique.ttf", int(120/tl))
+        self.font2=ImageFont.truetype("Base/SushiGo/font/FreeMonoBoldOblique.ttf", int(60/tl))
+
+
+        self.list_color = ['blue', 'yellow', 'red', 'green']
+        self.list_res = ['wood', 'brick', 'silver', 'gold']
+        self.list_people_x = ['field', 'people', 'home', 'tool']
+        self.people = []
+        self.res = []
+        self.tools = []
+        self.list_total_people_x = []
+        for i in range(4):
+            self.people.append(Image.open(f"{IMG_PATH}icon/people_{self.list_color[i]}.png").resize(tuple(ICON_SIZE)))
+            self.res.append(Image.open(f"{IMG_PATH}icon/res_{self.list_res[i]}.png").resize(tuple(ICON_SIZE)))
+            self.tools.append(Image.open(f"{IMG_PATH}icon/tool_{i+1}.png").resize(tuple(ICON_SIZE)))
+            self.list_total_people_x.append(Image.open(f"{IMG_PATH}icon/people_x_{self.list_people_x[i]}.png").resize(tuple(ICON_SIZE)))
+
+        self.score = Image.open(f"{IMG_PATH}icon/score.png").resize(tuple(ICON_SIZE))
+        self.type_civ = Image.open(f"{IMG_PATH}icon/type_civ.png").resize(tuple(ICON_SIZE))
+        self.food = Image.open(f"{IMG_PATH}icon/food.png").resize(tuple(ICON_SIZE))
+        self.field = Image.open(f"{IMG_PATH}icon/field.png").resize(tuple(ICON_SIZE))
+        self.building_icon = Image.open(f"{IMG_PATH}icon/home.png").resize(tuple(ICON_SIZE))
+
+
+class Draw_Agent:
+    def __init__(self) -> None:
+        x2 = int((SIZE_BOARD[0]-BG_SIZE[0])/2) + BG_SIZE[0]
+        y2 = int((SIZE_BOARD[1])/2)
+        self.coords = [(0, 0), (x2, 0), (x2, y2+3), (0, y2+3)]
+        pass
+
+    def draw_agent_block(self, im, 
+                         res_array = np.full((4, 4), 1), 
+                         tool_array = np.full((4, 3), 2), 
+                         people_x_array = np.full((4, 4), 3), 
+                         all_type_civ = np.full((4, 8), 4),
+                         score = [0,0,0,0], field = [0,0,0,0], peoples = [0,0,0,0],
+                         food = [0,0,0,0], building = [0,0,0,0], type_civ = [0,0,0,0]):
+        # p1 = Image.new('RGB', (int((SIZE_BOARD[0]-BG_SIZE[0])/2), int((SIZE_BOARD[1])/2)), 'black')
+        # im.paste(p1, (0, 0))
+        for i in range(4):
+            x = self.coords[i][0] 
+            y = self.coords[i][1]
+
+            im.paste(sprites.score, (x, y))
+            ImageDraw.Draw(im).text((x + ICON_SIZE[0], y + int(ICON_SIZE[1]/2)), str(score[i]), fill='white', font=sprites.font2)
+            im.paste(sprites.field, (x + 2*ICON_SIZE[0], y))
+            ImageDraw.Draw(im).text((x + 3*ICON_SIZE[0], y + int(ICON_SIZE[1]/2)), str(field[i]), fill='white', font=sprites.font2)
+            im.paste(sprites.people[i], (x + 4*ICON_SIZE[0], y))
+            ImageDraw.Draw(im).text((x + 5*ICON_SIZE[0], y + int(ICON_SIZE[1]/2)), str(peoples[i]), fill='white', font=sprites.font2)
+
+            im.paste(sprites.food, (x + 0*ICON_SIZE[0], y + ICON_SIZE[1]))
+            ImageDraw.Draw(im).text((x + 1*ICON_SIZE[0], y + 1*ICON_SIZE[1] + int(ICON_SIZE[1]/2)), str(food[i]), fill='white', font=sprites.font2)
+            im.paste(sprites.building_icon, (x + 2*ICON_SIZE[0], y + ICON_SIZE[1]))
+            ImageDraw.Draw(im).text((x + 3*ICON_SIZE[0], y + 1*ICON_SIZE[1] + int(ICON_SIZE[1]/2)), str(building[i]), fill='white', font=sprites.font2)
+            im.paste(sprites.type_civ, (x + 4*ICON_SIZE[0], y + ICON_SIZE[1]))
+            ImageDraw.Draw(im).text((x + 5*ICON_SIZE[0], y + 1*ICON_SIZE[1] + int(ICON_SIZE[1]/2)), str(type_civ[i]), fill='white', font=sprites.font2)
+
+
+            for res in range(4):
+                x_ = x + 2*ICON_SIZE[0]*res
+                y_ = y + 2*ICON_SIZE[1]
+                im.paste(sprites.res[res], (x_, y_))
+                ImageDraw.Draw(im).text((x_ + ICON_SIZE[0], y_ + int(ICON_SIZE[1]/2)), str(res_array[i][res]), fill= 'white', font = sprites.font2)
+
+            for tool in range(3):
+                x_ = x + 2*ICON_SIZE[0]*tool
+                y_ = y + 3*ICON_SIZE[1]
+                im.paste(sprites.tools[tool], (x_, y_))
+                ImageDraw.Draw(im).text((x_ + ICON_SIZE[0], y_ + int(ICON_SIZE[1]/2)), str(tool_array[i][tool]), fill= 'white', font = sprites.font2)
+            
+            for people_x in range(4):
+                x_ = x + 2*ICON_SIZE[0]*people_x
+                y_ = y + 4*ICON_SIZE[1]
+                im.paste(sprites.list_total_people_x[people_x], (x_, y_))
+                ImageDraw.Draw(im).text((x_ + ICON_SIZE[0], y_ + int(ICON_SIZE[1]/2)), str(people_x_array[i][people_x]), fill= 'white', font = sprites.font2)
+    
+            ImageDraw.Draw(im).text((x, y + 6*ICON_SIZE[1]), 'Các loại nền văn minh:', fill= 'white', font = sprites.font2)
+            for id_type_civ in range(8):
+                x_ = x + ICON_SIZE[0]*id_type_civ
+                y_ = y + 7*ICON_SIZE[1]
+                ImageDraw.Draw(im).text((x_, y_), str(all_type_civ[i][id_type_civ]), fill= 'white', font = sprites.font2)
+
+    def draw_line(self, im, color = 'White', width = 3):
+        w, h = int(im.size[0]/2), int(im.size[1]/2)
+        shape = [(w, 0), (w, int((im.size[1])))]
+        ImageDraw.Draw(im).line(shape, fill=color, width=width)
+        shape = [(0, h), (im.size[0], h)]
+        ImageDraw.Draw(im).line(shape, fill=color, width=width)
 
 class Params:
     def __init__(self) -> None:
-
-        x_0 = BG_SIZE[0] * 0.1
-        x_1 = BG_SIZE[0] * 0.8
-        y_0 = 0.1*BG_SIZE[1] - 0.25*CARD_SIZE[1]
-        y_1 = 0.9*BG_SIZE[1] - 0.75*CARD_SIZE[1]
-        self.list_coords_1 = [(x_0, y_1), (x_1, y_1), (x_1, y_0), (x_0, y_0)]
-        self.score_coords = [(x_0, y_1*0.9), (x_1, y_1*0.9), (x_1, y_0*6), (x_0, y_0*6)]
             
-        x = int(BG_SIZE[0]*0.27)
+        x = int(BG_SIZE[0]*0.28)
         y = int(BG_SIZE[1]*0.17)
         self.list_coords_forest = [(x, y), (x + _d_, y), (x + _d_, y + _d_), (x, y + _d_)]
 
-        x = int(BG_SIZE[0]*0.49)
-        y = int(BG_SIZE[1]*0.12)
+        x = int(BG_SIZE[0]*0.50)
+        y = int(BG_SIZE[1]*0.15)
         self.list_coords_rock = [(x, y), (x + _d_, y), (x + _d_, y + _d_), (x, y + _d_)]
 
         x = int(BG_SIZE[0]*0.88)
-        y = int(BG_SIZE[1]*0.12)
+        y = int(BG_SIZE[1]*0.14)
         self.list_coords_silver = [(x, y), (x + _d_, y), (x + _d_, y + _d_), (x, y + _d_)]
 
         x = int(BG_SIZE[0]*0.75)
         y = int(BG_SIZE[1]*0.39)
         self.list_coords_gold = [(x, y), (x + _d_, y), (x + _d_, y + _d_), (x, y + _d_)]
 
-        r_x = 33
-        r_y = 23
+        r_x = BG_SIZE[0]*0.040
+        r_y = BG_SIZE[1]*0.039
         x = BG_SIZE[0]*0.25
         y = BG_SIZE[1]*0.57
         self.field = (x, y, x + r_x, y + r_y)
@@ -208,16 +290,22 @@ class Params:
         for i in range(4):
             ImageDraw.Draw(bg).text(self.list_coords_gold[i], str(list_count_res[i]), fill= sprites.list_color[i], font = sprites.font)
 
-_d_ = BG_SIZE[0] * 0.05
+
+
+_d_ = BG_SIZE[0] * 0.04
 params = Params()
 sprites = Sprites()
+_agent_ = Draw_Agent()
 
-def draw_cards(bg):
+def draw_cards(bg, list_count_building, count_civ):
     x = int(BG_SIZE[0]*0.018)
     y = int(BG_SIZE[1]*0.83)
     for i in range(4):
         bg.paste(sprites.cards_building[i], (x, y))
+        ImageDraw.Draw(bg).text((x + x*0.1, y - y*0.08), str(list_count_building[i]), fill= 'white', font = sprites.font)
         x += int(BG_SIZE[0]*0.112)
+
+    ImageDraw.Draw(bg).text((int(BG_SIZE[0]*0.73), int(BG_SIZE[1]*0.63)), str(count_civ), fill= 'black', font = sprites.font)
 
     x = int(BG_SIZE[0]*0.5)
     y = int(BG_SIZE[1]*0.735)
@@ -229,10 +317,8 @@ def get_state_image(state=None):
     background = sprites.background.copy()
     if state is None:
         return background
-    draw_cards(background)
-    # background.paste(sprites.people, (int(BG_SIZE[0]*0.5), int(BG_SIZE[1]*0.1)))
+    draw_cards(background, [7, 7, 7, 7], 30)
 
-    # ImageDraw.Draw(background).ellipse(params.field, fill='red')
     color = 'white'
     params.draw_field(background, color)
     params.draw_hut(background, color)
@@ -245,9 +331,18 @@ def get_state_image(state=None):
     params.draw_silver(background, [1,2 ,3, 4])
     params.draw_gold(background, [1,2 ,3, 4])
 
-    im = Image.new('RGB', SIZE_BOARD, (128, 128, 128))
-    print(BG_SIZE)
+    im = Image.new('RGB', SIZE_BOARD, 'black')
+    _agent_.draw_line(im)
     im.paste(background, (int((SIZE_BOARD[0]-BG_SIZE[0])/2), int((SIZE_BOARD[1]-BG_SIZE[1])/2)))
+    
+    _agent_.draw_agent_block(im)
+
+    list_state_card_building = state[14:110].reshape(4, 24)
+    print(list_state_card_building[0])
+    for i in range(len(CIV_CARDS)):
+        if (list_state_card_building[0] == CIV_CARDS[i]).all():
+            print(i)
+    # print(np.where(CIV_CARDS == list_state_card_building[0], )[0])
     return im
 
 def get_main_player_state(env_components: Env_components, list_agent, list_data, action=None):
