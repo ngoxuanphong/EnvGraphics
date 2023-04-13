@@ -41,7 +41,7 @@
     -    [13]: GAME ĐÃ END HAY CHƯA
     -    [14:110]: thông tin của các thẻ civ trên bàn
     -    [110:142]: Thông tin các thẻ build trên bàn
-    -    [142:302]: Thông tin của các người chơi [142:142+44*4]
+    -    [142:318]: Thông tin của các người chơi [142:142+44*4]
     -        0: Điểm 
     -        1: Lúa
     -        2: Số người
