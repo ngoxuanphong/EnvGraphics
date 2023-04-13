@@ -274,12 +274,12 @@ class Params:
             ImageDraw.Draw(bg).ellipse(params.hut[i], fill=color)
     def draw_tool_maker(self, bg, color):
         ImageDraw.Draw(bg).ellipse(params.tool_maker, fill=color)
-    def draw_building(self, bg, color):
+    def draw_building(self, bg, colors):
         for i in range(4):
-            ImageDraw.Draw(bg).ellipse(params.point_building[i], fill=color)
-    def draw_civ(self, bg, color):
+            ImageDraw.Draw(bg).ellipse(params.point_building[i], fill=colors[i])
+    def draw_civ(self, bg, colors):
         for i in range(4):
-            ImageDraw.Draw(bg).ellipse(params.point_civ[i], fill=color)
+            ImageDraw.Draw(bg).ellipse(params.point_civ[i], fill=colors[i])
     def draw_forest(self, bg, list_count_res):
         for i in range(4):
             ImageDraw.Draw(bg).text(self.list_coords_forest[i], str(list_count_res[i]), fill= sprites.list_color[i], font = sprites.font)
@@ -359,12 +359,15 @@ def draw_res(background, all_res = np.full((4, 4), 0)):
     params.draw_silver(background, all_res[2])
     params.draw_gold(background, all_res[3])
 
-def draw_point(background, color = 'white'):
-    params.draw_field(background, color)
-    params.draw_hut(background, color)
-    params.draw_tool_maker(background, color)
-    params.draw_building(background, color)
-    params.draw_civ(background, color)
+def draw_point(background, 
+               colors = ['white','white', 'white'],
+               color_building = ['white','white', 'white', 'white'], 
+               color_civ = ['white','white', 'white', 'white']):
+    params.draw_field(background, colors[0])
+    params.draw_hut(background, colors[1])
+    params.draw_tool_maker(background, colors[2])
+    params.draw_building(background, color_building)
+    params.draw_civ(background, color_civ)
 
 def get_state_image(state=None):
     background = sprites.background.copy()
