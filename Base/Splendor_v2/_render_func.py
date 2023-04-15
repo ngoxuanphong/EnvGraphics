@@ -14,83 +14,48 @@ CIV_CARDS_SIZE =(np.array([335, 515])/(tl + 0.1)).astype(np.int64)
 ICON_SIZE = (np.array([120, 120])/tl).astype(np.int64)
 
 action_description = {
-    0: "Dừng lấy công cụ",
-    1: "Đặt 1 người",
-    2: "Đặt 2 người",
-    3: "Đặt 3 người",
-    4: "Đặt 4 người",
-    5: "Đặt 5 người",
-    6: "Đặt 6 người",
-    7: "Đặt 7 người",
-    8: "Đặt 8 người",
-    9: "Đặt 9 người",
-
-    11: "Đặt người vào lúa",
-    12: "Đặt vào ô công cụ",
-    13: "Đặt vào ô sinh sản",
-    14: "Đặt vào khu gỗ",
-    15: "Đặt vào khu gạch",
-    16: "Đặt vào khu bạc",
-    17: "Đặt vào khu vàng",
-    18: "Đặt vào khu lương thực",
-
-    19: "Đặt người vào ô thẻ civ 0",
-    20: "Đặt người vào ô thẻ civ 1",
-    21: "Đặt người vào ô thẻ civ 2",
-    22: "Đặt người vào ô thẻ civ 3",
-    23: "Đặt người vào ô thẻ building 0",
-    24: "Đặt người vào ô thẻ building 1",
-    25: "Đặt người vào ô thẻ building 2",
-    26: "Đặt người vào ô thẻ building 3",
-
-
-    27: "Chọn trừ nguyên liệu (Khi đến hết vòng không đủ thức ăn)",
-    28: "Chọn trừ điểm (Khi đến hết vòng không đủ thức ăn)",
-
-    29: "Lấy người từ lúa",
-    30: "Lấy người từ công cụ",
-    31: "Lấy người từ sinh sản",
-    32: "Lấy người từ gỗ",
-    33: "Lấy người từ gạch",
-    34: "Lấy người từ bạc",
-    35: "Lấy người từ vàng",
-    36: "Lấy người từ lương thực",
-
-    37: "Dùng công cụ ở ô 1",
-    38: "Dùng công cụ ở ô 1",
-    39: "Dùng công cụ ở ô 1",
-
-    40: "Trả nguyên liêu gỗ",
-    41: "Trả nguyên liêu gạch",
-    42: "Trả nguyên liêu bạc",
-    43: "Trả nguyên liêu vàng",
-
-    44: "Dùng công cụ một lần 1",
-    45: "Dùng công cụ một lần 2",
-    46: "Dùng công cụ một lần 3",
-
-    47: "Dừng trả nguyên liệu khi mua thẻ build 1-7 (Thẻ build trả 1 đến 7 người để đổi ra điểm)",
-    48: "Lấy người từ ô thẻ civ 0",
-    49: "Lấy người từ ô thẻ civ 1",
-    50: "Lấy người từ ô thẻ civ 2",
-    51: "Lấy người từ ô thẻ civ 3",
-    52: "Lấy người từ ô thẻ building 0",
-    53: "Lấy người từ ô thẻ building 1",
-    54: "Lấy người từ ô thẻ building 2",
-    55: "Lấy người từ ô thẻ building 3",
-
-    57: "Chọn xúc xắc số 1",
-    58: "Chọn xúc xắc số 2",
-    59: "Chọn xúc xắc số 3",
-    60: "Chọn xúc xắc số 4",
-    61: "Chọn xúc xắc số 5",
-    62: "Chọn xúc xắc số 6",
-
-    63: "Chọn dùng thẻ lấy thêm 2 nguyên liệu từ thẻ civ",
-    64: "Trả nguyên liêu gỗ",
-    65: "Trả nguyên liêu gạch",
-    66: "Trả nguyên liêu bạc",
-    67: "Trả nguyên liêu vàng",
+        0: "Bỏ lượt",
+        1: "Lấy thẻ thứ 1",
+        2: "Lấy thẻ thứ 2",
+        3: "Lấy thẻ thứ 3",
+        4: "Lấy thẻ thứ 4",
+        5: "Lấy thẻ thứ 5",
+        6: "Lấy thẻ thứ 6",
+        7: "Lấy thẻ thứ 7",
+        8: "Lấy thẻ thứ 8",
+        9: "Lấy thẻ thứ 9",
+        10: "Lấy thẻ thứ 10",
+        11: "Lấy thẻ thứ 11",
+        12: "Lấy thẻ thứ 12",
+        13: "Mở thẻ đang úp thứ 1",
+        14: "Mở thẻ đang úp thứ 2",
+        15: "Mở thẻ đang úp thứ 3",
+        16: "Úp thẻ thứ 1",
+        17: "Úp thẻ thứ 2",
+        18: "Úp thẻ thứ 3",
+        19: "Úp thẻ thứ 4",
+        20: "Úp thẻ thứ 5",
+        21: "Úp thẻ thứ 6",
+        22: "Úp thẻ thứ 7",
+        23: "Úp thẻ thứ 8",
+        24: "Úp thẻ thứ 9",
+        25: "Úp thẻ thứ 10",
+        26: "Úp thẻ thứ 11",
+        27: "Úp thẻ thứ 12",
+        28: "Úp thẻ ẩn loại 1",
+        29: "Úp thẻ ẩn loại 2",
+        30: "Úp thẻ ẩn loại 3",
+        31: "Lấy nguyên liệu red",
+        32: "Lấy nguyên liệu blue",
+        33: "Lấy nguyên liệu green",
+        34: "Lấy nguyên liệu black",
+        35: "Lấy nguyên liệu white",
+        36: "Trả nguyên liệu red",
+        37: "Trả nguyên liệu blue",
+        38: "Trả nguyên liệu green",
+        39: "Trả nguyên liệu black",
+        40: "Trả nguyên liệu white",
+        41: "Trả nguyên liệu yellow",
     }
 
 class Env_components:
@@ -405,8 +370,8 @@ def draw_point(background,
                color_building = ['white','white', 'white', 'white'], 
                color_civ = ['white','white', 'white', 'white']):
     params.draw_field(background, colors[0])
-    params.draw_tool_maker(background, colors[1])
-    params.draw_hut(background, colors[2])
+    params.draw_hut(background, colors[1])
+    params.draw_tool_maker(background, colors[2])
     params.draw_building(background, color_building)
     params.draw_civ(background, color_civ)
 
