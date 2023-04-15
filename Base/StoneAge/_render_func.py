@@ -57,8 +57,8 @@ action_description = {
     36: "Lấy người từ lương thực",
 
     37: "Dùng công cụ ở ô 1",
-    38: "Dùng công cụ ở ô 1",
-    39: "Dùng công cụ ở ô 1",
+    38: "Dùng công cụ ở ô 2",
+    39: "Dùng công cụ ở ô 3",
 
     40: "Trả nguyên liêu gỗ",
     41: "Trả nguyên liêu gạch",
@@ -79,12 +79,12 @@ action_description = {
     54: "Lấy người từ ô thẻ building 2",
     55: "Lấy người từ ô thẻ building 3",
 
-    57: "Chọn xúc xắc số 1",
-    58: "Chọn xúc xắc số 2",
-    59: "Chọn xúc xắc số 3",
-    60: "Chọn xúc xắc số 4",
-    61: "Chọn xúc xắc số 5",
-    62: "Chọn xúc xắc số 6",
+    57: "Chọn xúc xắc số 1: Thêm 1 gỗ",
+    58: "Chọn xúc xắc số 2: Thêm 1 gạch",
+    59: "Chọn xúc xắc số 3: Thêm 1 bạc",
+    60: "Chọn xúc xắc số 4: Thêm 1 vàng",
+    61: "Chọn xúc xắc số 5: Thêm 1 công cụ",
+    62: "Chọn xúc xắc số 6: Thêm 1 lúa",
 
     63: "Chọn dùng thẻ lấy thêm 2 nguyên liệu từ thẻ civ",
     64: "Trả nguyên liêu gỗ",
@@ -95,6 +95,7 @@ action_description = {
 
 class Env_components:
     def __init__(self, env, winner, list_other, all_build_card, all_civ_card) -> None:
+        # print('Thứ tự các nền văn minh trong mô tả: \n Hình người, cây sáo, lá cây, dệt, đồng hồ, lu, xe, đá')
         self.env = env
         self.winner = winner
         self.list_other = list_other
@@ -168,6 +169,7 @@ class Draw_Agent:
     def draw_agent_block(self, im, 
                          res_array = np.full((4, 4), 1), 
                          tool_array = np.full((4, 3), 2), 
+                         state_tool_array = np.full((4, 3), 1),
                          tool_temp_array = np.full((4, 3), 2),
                          people_x_array = np.full((4, 4), 3), 
                          all_type_civ = np.full((4, 8), 4),
@@ -191,7 +193,7 @@ class Draw_Agent:
             im.paste(sprites.food, (x + 0*ICON_SIZE[0], y + ICON_SIZE[1]))
             ImageDraw.Draw(im).text((x + 1*ICON_SIZE[0], y + 1*ICON_SIZE[1] + int(ICON_SIZE[1]/2)), str(food[i]), fill='white', font=sprites.font2)
             im.paste(sprites.building_icon, (x + 2*ICON_SIZE[0], y + ICON_SIZE[1]))
-            ImageDraw.Draw(im).text((x + 3*ICON_SIZE[0], y + 1*ICON_SIZE[1] + int(ICON_SIZE[1]/2)), str(building[i]), fill='white', font=sprites.font2)
+            ImageDraw.Draw(im).text((x + 3*ICON_SIZE[0], y + 1*ICON_SIZE[1] +  int(ICON_SIZE[1]/2)), str(building[i]), fill='white', font=sprites.font2)
             im.paste(sprites.type_civ, (x + 4*ICON_SIZE[0], y + ICON_SIZE[1]))
             ImageDraw.Draw(im).text((x + 5*ICON_SIZE[0], y + 1*ICON_SIZE[1] + int(ICON_SIZE[1]/2)), str(type_civ[i]), fill='white', font=sprites.font2)
 
@@ -205,20 +207,24 @@ class Draw_Agent:
             for tool in range(3):
                 x_ = x + 2*ICON_SIZE[0]*tool
                 y_ = y + 3*ICON_SIZE[1]
-                im.paste(sprites.tools[tool], (x_, y_))
-                ImageDraw.Draw(im).text((x_ + ICON_SIZE[0], y_ + int(ICON_SIZE[1]/2)), str(tool_array[i][tool]), fill= 'white', font = sprites.font2)
+                id_tool = tool_array[i][tool] - 1
+                if id_tool != -1:
+                    im.paste(sprites.tools[id_tool], (x_, y_))
+                    ImageDraw.Draw(im).text((x_ + ICON_SIZE[0], y_ + int(ICON_SIZE[1]/2)), f'{state_tool_array[i][tool]}', fill= 'white', font = sprites.font2)
             for tool_temp in range(3):
                 x_ = x + 2*ICON_SIZE[0]*tool_temp
                 y_ = y + 4*ICON_SIZE[1]
-                im.paste(sprites.tools_temp[tool_temp], (x_, y_))
-                ImageDraw.Draw(im).text((x_ + ICON_SIZE[0], y_ + int(ICON_SIZE[1]/2)), str(tool_temp_array[i][tool_temp]), fill= 'white', font = sprites.font2)
+                id_tool_temp = tool_temp_array[i][tool_temp] - 1
+                if id_tool_temp != -1:
+                    im.paste(sprites.tools_temp[tool_temp], (x_, y_))
+                    ImageDraw.Draw(im).text((x_ + ICON_SIZE[0], y_ + int(ICON_SIZE[1]/2)), f'1', fill= 'white', font = sprites.font2)
             for people_x in range(4):
                 x_ = x + 2*ICON_SIZE[0]*people_x
                 y_ = y + 5*ICON_SIZE[1]
                 im.paste(sprites.list_total_people_x[people_x], (x_, y_))
                 ImageDraw.Draw(im).text((x_ + ICON_SIZE[0], y_ + int(ICON_SIZE[1]/2)), str(people_x_array[i][people_x]), fill= 'white', font = sprites.font2)
     
-            ImageDraw.Draw(im).text((x, y + 6*ICON_SIZE[1]), 'Các loại nền văn minh:', fill= 'white', font = sprites.font2)
+            ImageDraw.Draw(im).text((x, y + 6.4*ICON_SIZE[1]), 'Các loại nền văn minh:', fill= 'white', font = sprites.font2)
             for id_type_civ in range(8):
                 x_ = x + ICON_SIZE[0]*id_type_civ
                 y_ = y + 7*ICON_SIZE[1]
@@ -274,6 +280,8 @@ class Params:
         for i in range(4):
             self.point_building.append((x, y, x + r_x, y + r_y))
             x += int(BG_SIZE[0]*0.112)
+        self.point_building = self.point_building[::-1]
+
 
         x = int(BG_SIZE[0]*0.57)
         y = int(BG_SIZE[1]*0.84)
@@ -281,6 +289,7 @@ class Params:
         for i in range(4):
             self.point_civ.append((x, y, x + r_x, y + r_y))
             x += int(BG_SIZE[0]*0.126)
+        self.point_civ = self.point_civ[::-1]
 
         self.list_coords_dice_tool_maker = (int(BG_SIZE[0]*0.1),  int(BG_SIZE[1]*0.05))
         self.list_coords_card_choose_dice = (int(BG_SIZE[0]*0.4),  int(BG_SIZE[1]*0.05))
@@ -323,7 +332,9 @@ class Params:
     def draw_card_choose_dice(self, bg, list_card_choose_dice = [0, 0, 0, 0]):
         dices = [0, 0, 0, 0]
         for i in range(4):
-            dices[i] = np.argmax(list_card_choose_dice[i])
+            dice_ = np.where(list_card_choose_dice[i] == 1)[0]
+            if len(dice_) != 0:
+                dices[i] = dice_[0] + 1
         ImageDraw.Draw(bg).text(self.list_coords_card_choose_dice, f'Card choose dice: \n {dices}', fill= 'white', font = sprites.font2)
 
 
@@ -333,20 +344,20 @@ sprites = Sprites()
 _agent_ = Draw_Agent()
 
 def draw_cards(bg, list_card_build_on_board, list_card_civ_on_board,list_count_building = [7, 7, 7, 7], count_civ = 30):
-    x = int(BG_SIZE[0]*0.018)
+    x = int(BG_SIZE[0]*0.35)
     y = int(BG_SIZE[1]*0.83)
     for i in range(len(list_card_build_on_board)):
         bg.paste(sprites.cards_building[list_card_build_on_board[i]], (x, y))
         ImageDraw.Draw(bg).text((x + x*0.1, y - y*0.08), str(list_count_building[i]), fill= 'white', font = sprites.font)
-        x += int(BG_SIZE[0]*0.112)
+        x -= int(BG_SIZE[0]*0.112)
 
     # ImageDraw.Draw(bg).text((int(BG_SIZE[0]*0.73), int(BG_SIZE[1]*0.63)), str(count_civ), fill= 'black', font = sprites.font)
 
-    x = int(BG_SIZE[0]*0.5)
+    x = int(BG_SIZE[0]*0.87)
     y = int(BG_SIZE[1]*0.735)
     for i in range(len(list_card_civ_on_board)):
         bg.paste(sprites.card_civilization[list_card_civ_on_board[i]], (x, y))
-        x += int(BG_SIZE[0]*0.126)
+        x -= int(BG_SIZE[0]*0.126)
 
 def draw_state_card(state, background):
     list_state_card_civ = state[14:110].reshape(4, 24)
@@ -377,6 +388,7 @@ def draw_specifications_agent(im, state):
     res_array = all_agent_state[:, 5:9]
     tool_array = all_agent_state[:, 9:12]
     tool_temp_array = all_agent_state[:, 12:15]
+    state_tool_array = all_agent_state[:, 15:18]
     people_x_array = all_agent_state[:, 39:43]
     all_type_civ = all_agent_state[:, 22:30]
     type_civ = [len(np.where(all_agent_state[:, 22:30][i])[0]) for i in range(4)]
@@ -384,6 +396,7 @@ def draw_specifications_agent(im, state):
     _agent_.draw_agent_block(im, res_array=res_array, 
                              tool_array = tool_array, 
                              tool_temp_array = tool_temp_array,
+                             state_tool_array = state_tool_array, 
                              people_x_array=people_x_array, 
                              all_type_civ=all_type_civ,
                              score=list_score, field=list_field, peoples=list_people, 
