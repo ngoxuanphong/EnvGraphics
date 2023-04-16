@@ -418,7 +418,6 @@ def getValidActions(p_state):
 
     if phase == 3: #Trả nguyên liệu mua thẻ civ
         list_action[40:44] = (p_state[s_ + 5:s_ + 9] > 0)
-        list_action[47] = 1
 
     if phase == 4: #Dùng công cụ(end hoặc hết thì qua roll xúc xắc)
         list_action[37:40] = (p_state[s_ + 15:s_ + 18] > 0)
@@ -427,6 +426,7 @@ def getValidActions(p_state):
 
     if phase == 5: #trả nguyên liệu khi mua thẻ build 1 -> 7
         list_action[40:44] = (p_state[s_ + 5:s_ + 9] > 0)
+        list_action[47] = 1
 
     if phase == 6: #Chọn trừ nguyên liệu hoặc trừ điểm khi không đủ thức ăn
         list_action[27] = 1
