@@ -216,7 +216,7 @@ class Draw_Agent:
                 y_ = y + 4*ICON_SIZE[1]
                 id_tool_temp = tool_temp_array[i][tool_temp] - 1
                 if id_tool_temp != -1:
-                    im.paste(sprites.tools_temp[tool_temp], (x_, y_))
+                    im.paste(sprites.tools_temp[tool_temp + 1], (x_, y_))
                     ImageDraw.Draw(im).text((x_ + ICON_SIZE[0], y_ + int(ICON_SIZE[1]/2)), f'1', fill= 'white', font = sprites.font2)
             for people_x in range(4):
                 x_ = x + 2*ICON_SIZE[0]*people_x
