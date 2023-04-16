@@ -138,7 +138,7 @@ class Sprites:
 
         self.list_color = ['blue', 'yellow', 'red', 'green']
         self.list_res = ['wood', 'brick', 'silver', 'gold']
-        self.list_people_x = ['field', 'people', 'home', 'tool']
+        self.list_people_x = ['home', 'tool', 'people', 'field']
         self.people = []
         self.res = []
         self.tools = []
