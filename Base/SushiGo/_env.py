@@ -3,7 +3,7 @@ import random
 
 from numba import njit
 
-## # # @njit()
+## # # #hihinjit()
 def initEnv(n):
     '''
     n : số lượng người chơi\n
@@ -40,7 +40,7 @@ def initEnv(n):
         state_sys =  np.concatenate((state_sys ,np.array([0,0]) ,np.array([-1 for i in range(12-n)])))
     return state_sys
 
-## # # @njit()
+## # # #hihinjit()
 def getAgentState(state_sys,index_player):
     amount_player = 5
     round = state_sys[0] - 1
@@ -76,7 +76,7 @@ def getAgentState(state_sys,index_player):
             step += 12
     return state_player.astype(np.float64)
 
-## # # @njit()
+## # # #hihinjit()
 def calculator_for_one(card):
     score_dumpling = [0,1,3,6,10,15]
     score = card[0]
@@ -114,18 +114,18 @@ def calculator_for_one(card):
 
     return score,np.count_nonzero(card ==9)
 
-## # # @njit()
+## # # #hihinjit()
 def count_maki(card):
     maki_1 = np.count_nonzero(card == 3)
     maki_2 = np.count_nonzero(card == 4)
     maki_3 = np.count_nonzero(card == 5)
     return maki_1 + maki_2*2 + maki_3*3
 
-## # # @njit()
+## # # #hihinjit()
 def get_index(arr,first,second):
     return np.where(arr == first)[0],np.where(arr == second)[0]
 
-## # # @njit()
+## # # #hihinjit()
 def calculator_pudding(state_sys,amount_player):
     amount_player = state_sys[2]
     arr_pudding = np.array([0 for i in range(amount_player)])
@@ -144,7 +144,7 @@ def calculator_pudding(state_sys,amount_player):
             state_sys[index_start_player_s] += score
     return state_sys
 
-## # # @njit()
+## # # #hihinjit()
 def calculator_score(state_sys,amount_player):
     amount_player = state_sys[2]
     round = state_sys[0] - 1
@@ -177,7 +177,7 @@ def calculator_score(state_sys,amount_player):
                 break
     return state_sys
 
-## # # @njit()
+## # # #hihinjit()
 def getReward(state_player):
     if state_player[1] <= 21:
         return -1
@@ -199,7 +199,7 @@ def getReward(state_player):
     else:
         return 0
 
-## # # @njit()
+## # # #hihinjit()
 def winner_victory(state_sys):
     amount_player = int(state_sys[2])
     list_score = state_sys[3+3*amount_player*7::14-amount_player]
@@ -216,7 +216,7 @@ def winner_victory(state_sys):
         return winner[winner_puding]
 
 
-## # # @njit()
+## # # #hihinjit()
 def stepEnv(state_sys,list_action,amount_player,turn,round):
     player = 0
     turn +=4
@@ -239,7 +239,7 @@ def stepEnv(state_sys,list_action,amount_player,turn,round):
     return state_sys
 
 
-## # # @njit()
+## # # #hihinjit()
 def reset_card_player(state_sys):
     amount_player = state_sys[2]
     for player in range(amount_player):
@@ -250,7 +250,7 @@ def reset_card_player(state_sys):
     return state_sys
 
 
-## # # @njit()
+## # # #hihinjit()
 def test_action(player_state,action):
     index_between = 14
     if action == 12:
@@ -266,13 +266,13 @@ def test_action(player_state,action):
         player_state[-2] -= 1
     return player_state
 
-## # # @njit()
+## # # #hihinjit()
 def move_card(state,card,start_1 = 0,start_2 = 0):
     state[start_1+card] -= 1
     state[start_2+card] += 1
     return state
 
-## # # @njit()
+## # # #hihinjit()
 def move_card_step(state,card,start_1 = 0,end_1=0,start_2 = 0,end_2 = 0):
     index_relative_from = np.where(state[start_1:end_1] == card)[0]
     index_relative_to = np.where(state[start_2:end_2]==-1)[0]
@@ -284,21 +284,21 @@ def move_card_step(state,card,start_1 = 0,end_1=0,start_2 = 0,end_2 = 0):
     return state
 
 
-## # # @njit()
+## # # #hihinjit()
 def getActionSize():
     return 14
 
-## # # @njit()
+## # # #hihinjit()
 def getAgentSize():
     return 5
 
-## # # @njit()
+## # # #hihinjit()
 def getStateSize():
     return 86
 
 
 
-## # # @njit()
+## # # #hihinjit()
 def getValidActions(player_state_origin:np.int64):
     list_action_return = np.zeros(14)
     player_state = player_state_origin.copy()
@@ -323,7 +323,7 @@ def getValidActions(player_state_origin:np.int64):
 
 
 
-## # # @njit()
+## # # #hihinjit()
 def one_game_numba(p0, list_other, per_player, per1, per2, per3, per4, p1, p2, p3, p4):
     amount_player = 5
     state_sys = initEnv(amount_player)
@@ -386,7 +386,7 @@ def one_game_numba(p0, list_other, per_player, per1, per2, per3, per4, p1, p2, p
     else: result = 0
     return result,per_player
 
-## # # @njit()
+## # # #hihinjit()
 def n_games_numba(p0, num_game, per_player, list_other, per1, per2, per3, per4, p1, p2, p3, p4):
     win = 0
     for _ in range(num_game):
@@ -486,14 +486,14 @@ def load_module_player(player, game_name = None):
     return module
 
 
-## # # @njit()
+## # # #hihinjit()
 def bot_lv0(state, perData):
     validActions = getValidActions(state)
     arr_action = np.where(validActions==1)[0]
     idx = np.random.randint(0, arr_action.shape[0])
     return arr_action[idx], perData
 
-## # # @njit()
+## # # #hihinjit()
 def check_run_under_njit(agent, perData):
     return True
 

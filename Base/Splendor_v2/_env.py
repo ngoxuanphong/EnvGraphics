@@ -35,7 +35,7 @@ P_START_STOCK_COUNT = 12
 P_END_STOCK_COUNT = 17
 TOTAL_INFOR_NORMAL_CARD = 11
 
-# # @njit()
+# # #hihinjit()
 def initEnv():
     env_state = np.full(164, 0)
     env_state[:] = 0
@@ -56,12 +56,12 @@ def initEnv():
     return env_state, lv1, lv2, lv3
 
 
-# # @njit()
+# # #hihinjit()
 def get_list_id_card_on_lv(lv):
     if len(lv) >= 4:return lv[:4]
     else: return lv[:len(lv)]
 
-# # @njit()
+# # #hihinjit()
 def checkEnded(env_state):
     score_arr = np.array([env_state[118 + 12*p_id] for p_id in range(4)])
     max_score = np.max(score_arr)
@@ -93,7 +93,7 @@ def checkEnded(env_state):
     else:
         return 0
 
-# # @njit()
+# # #hihinjit()
 def concatenate_all_lv_card(lv1, lv2, lv3):
     card_lv1 = normal_cards_infor[get_list_id_card_on_lv(lv1)]
     card_lv2 = normal_cards_infor[get_list_id_card_on_lv(lv2)]
@@ -102,13 +102,13 @@ def concatenate_all_lv_card(lv1, lv2, lv3):
     list_open_card = np.append(list_open_card, card_lv3)
     return list_open_card
     
-# # @njit()
+# # #hihinjit()
 def get_id_card_normal_in_lv(lv1, lv2, lv3):
     list_card_normal_on_board = np.append(get_list_id_card_on_lv(lv1), get_list_id_card_on_lv(lv2))
     list_card_normal_on_board = np.append(list_card_normal_on_board, get_list_id_card_on_lv(lv3))
     return list_card_normal_on_board
 
-# # @njit()
+# # #hihinjit()
 def getAgentState(env_state, lv1, lv2, lv3):
     p_id = env_state[100] % 4  #Lấy người đang chơi
     b_infor = env_state[101:107] # Lấy 6 loại nguyên liệu của bàn chơi
@@ -150,7 +150,7 @@ def getAgentState(env_state, lv1, lv2, lv3):
     return p_state.astype(np.float64)
 
 
-# # @njit()
+# # #hihinjit()
 def getReward(p_state):
     scores = p_state[P_START_OTHER_SCORE:P_END_OTHER_SCORE]
     owner_score = p_state[P_SCORE]
@@ -165,7 +165,7 @@ def getReward(p_state):
         return 0
 
 
-# # @njit()
+# # #hihinjit()
 def get_remove_card_on_lv_and_add_new_card(env_state, lv,p_id, id_card_hide, type_action, card_id):
     if type_action == 2:
         env_state[lv[4]] = -(p_id+1)
@@ -184,7 +184,7 @@ def get_remove_card_on_lv_and_add_new_card(env_state, lv,p_id, id_card_hide, typ
         env_state[id_card_hide] = 100
     return env_state, lv
 
-# # @njit()
+# # #hihinjit()
 def stepEnv(action,env_state, lv1, lv2, lv3):
     p_id = env_state[100] % 4
     cur_p = env_state[107 + 12*p_id:119 + 12*p_id]
@@ -307,19 +307,19 @@ def stepEnv(action,env_state, lv1, lv2, lv3):
     env_state[101:107] = b_stocks
     return env_state, lv1, lv2, lv3
 
-# # @njit()
+# # #hihinjit()
 def getActionSize():
     return P_ACTION_SIZE
 
-# # @njit()
+# # #hihinjit()
 def getAgentSize():
     return 4
 
-# # @njit()
+# # #hihinjit()
 def getStateSize():
     return P_STATE_SIZE
 
-# # @njit()
+# # #hihinjit()
 def getValidActions(player_state_origin:np.int64):
 
     list_action_return = np.zeros(P_ACTION_SIZE)
@@ -410,7 +410,7 @@ def getValidActions(player_state_origin:np.int64):
     return list_action_return.astype(np.float64)
 
 
-# # @njit()
+# # #hihinjit()
 def one_game_numba(p0, list_other, per_player, per1, per2, per3, p1, p2, p3):
     env, lv1, lv2, lv3 = initEnv()
     _cc = 0
@@ -457,7 +457,7 @@ def one_game_numba(p0, list_other, per_player, per1, per2, per3, p1, p2, p3):
 
     return winner,  per_player
 
-# # @njit()
+# # #hihinjit()
 def n_games_numba(p0, num_game, per_player, list_other, per1, per2, per3, p1, p2, p3):
     win = 0
     for _ in range(num_game):
@@ -541,7 +541,7 @@ def load_module_player(player, game_name = None):
     spec.loader.exec_module(module)
     return module
 
-# # @njit()
+# # #hihinjit()
 def bot_lv0(state, perData):
     validActions = getValidActions(state)
     arr_action = np.where(validActions==1)[0]
@@ -596,7 +596,7 @@ def load_agent(level, *args):
     return _list_bot_level_, _list_per_level_
 
 
-## # # @njit()
+## # # #hihinjit()
 def check_run_under_njit(agent, perData):
     return True
 
