@@ -292,6 +292,8 @@ def get_main_player_state(env_components: Env_components, list_agent, list_data,
     else: #have winner
         my_idx = np.where(env_components.list_other == -1)[0][0]
         env = env_components.env.copy()
+        env[100] = my_idx
+        state[220] = 1
         state = _env.getAgentState(env, env_components.lv1, env_components.lv2, env_components.lv3)
         if my_idx == (env_components.winner - 1):
             win = 1
