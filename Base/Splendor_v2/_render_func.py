@@ -79,6 +79,8 @@ def get_env_components():
     winner = _env.checkEnded(env)
     list_other = np.array([-1, 1, 2, 3])
     np.random.shuffle(list_other)
+    while list_other[-1] == -1:
+        np.random.shuffle(list_other)
     env_components = Env_components(env, winner, list_other, lv1, lv2, lv3)
     return env_components
 
