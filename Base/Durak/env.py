@@ -1,11 +1,11 @@
-from Base.TLMN import _env as __env
+from Base.Durak import _env as __env
 from render_template import Render as __Render, import_files as __import_files
 from numba.core.errors import NumbaPendingDeprecationWarning as __NumbaPendingDeprecationWarning
 import warnings as __warnings
 __warnings.simplefilter("ignore", __NumbaPendingDeprecationWarning)
 
 
-__import_files("TLMN")
+__import_files("Durak")
 
 
 getValidActions = __env.getValidActions

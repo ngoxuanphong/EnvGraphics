@@ -9,7 +9,7 @@ import warnings
 warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
 warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 warnings.simplefilter('ignore', category=NumbaWarning)
-@njit
+#hihinjit()
 def initEnv():
     env = np.zeros(81)
     card = np.arange(52)#card
@@ -25,13 +25,13 @@ def initEnv():
     env[60:80] = card[32:52] #card on deck
     env[80] = 0
     return env
-@njit
+#hihinjit()
 def getStateSize():
     return 167
-@njit
+#hihinjit()
 def getAgentSize():
     return 4
-@njit
+#hihinjit()
 def getAgentState(env):
     state = np.zeros(getStateSize())
     if env[53]==0:
@@ -57,10 +57,10 @@ def getAgentState(env):
     state[166] = env[80]
     return state
 
-@njit
+#hihinjit()
 def getActionSize():
     return 53
-@njit
+#hihinjit()
 def getDefenseCard(state):
     card = np.zeros(52)
     idx = np.argmax(state[158:162]) #trump suit: 0:spade,1:club,2:diamond,3:heart
@@ -72,7 +72,7 @@ def getDefenseCard(state):
         card[card_def_id+1:13*(idx+1)][np.where(state[card_def_id+1:13*(idx+1)]==1)] = 1 #higher value trump card only.
     return card
     
-@njit
+#hihinjit()
 def getAttackCard(state):
     card = np.zeros(52)
     card_on_board = np.where(state[52:104]==1)[0]
@@ -82,7 +82,7 @@ def getAttackCard(state):
         if c%13 in card_value_on_board:
             card[c] = 1
     return card
-@njit
+#hihinjit()
 def getValidActions(state):
     list_action = np.zeros(getActionSize())
     #attack
@@ -98,7 +98,7 @@ def getValidActions(state):
     if np.sum(list_action)==0:
         list_action[52] = 1
     return list_action
-@njit
+#hihinjit()
 def drawCard(env):
     turn_draw_card = np.zeros(4)
     turn_draw_card[np.array([0,2,3])] = env[54:57] #attack player,main attack draw first.
@@ -114,7 +114,7 @@ def drawCard(env):
                 else:
                     env[env[60:80].astype(np.int64)[20-num_card_on_deck:]] = p_id
     return env
-@njit
+#hihinjit()
 def changeAttackPlayer(env): #change the defender and attacker
     if env[58]==1:
         env[54:57] = [4,2,3]
@@ -124,7 +124,7 @@ def changeAttackPlayer(env): #change the defender and attacker
         env[54:57] = [2,4,1]
     elif env[58]==4:
         env[54:57] = [3,1,2]
-@njit
+#hihinjit()
 def stepEnv(action,env):
     if action == 52:#skip
         if env[53] == 1: #defense
@@ -161,7 +161,7 @@ def stepEnv(action,env):
     # return env
 
 
-@njit
+#hihinjit()
 def checkEnded(env):
     if len(np.where(env[0:52]==0)[0])==0:#if no card left on deck
         for i in range(1,5):
@@ -169,7 +169,7 @@ def checkEnded(env):
                 return i - 1
     return -1
 
-@njit
+#hihinjit()
 def getReward(state):
     if state[162]==0 and state[166]==1:
         if np.sum(state[0:52])==0:
@@ -256,31 +256,6 @@ def load_module_player(player, game_name = None):
     return module
 
 
-#hihinjit()
-def random_Env(p_state, per):
-    arr_action = getValidActions(p_state)
-    arr_action = np.where(arr_action == 1)[0]
-    act_idx = np.random.randint(0, len(arr_action))
-    return arr_action[act_idx], per
-
-@njit
-def random_player1(state,per):
-    list_action  = np.where(getValidActions(state)==1)[0]
-    action = np.random.choice(list_action)
-    if getReward(state) != -1:
-        per[0] += 1
-
-    return action,per
-@njit
-def random_player(state,per):
-    list_action  = np.where(getValidActions(state)==1)[0]
-    action = np.random.choice(list_action)
-    return action,per
-    
-#hihinjit()
-def check_run_under_njit(Agent):
-    return True
-
 def one_game_normal(p0,pIdOrder,per_player,per1,per2,per3,p1,p2,p3):
     env = initEnv()
     winner = -1
@@ -337,11 +312,8 @@ def n_game_normal(p0, num_game, per_player, list_other, per1, per2, per3, p1, p2
         win += winner
     return win, per_player
 
-def numba_main_2(p0, num_game, per_player, level, *args):
+def load_agent(level, *args):
     num_bot = getAgentSize() - 1
-    list_other = np.array([1, 2, 3, -1])
-    try: check_njit = check_run_under_njit(p0)
-    except: check_njit = False
 
     if "_level_" not in globals():
         global _level_
@@ -384,6 +356,22 @@ def numba_main_2(p0, num_game, per_player, level, *args):
                     module_agent = load_module_player(lst_agent_level[i])
                     _list_per_level_.append(module_agent.convert_to_test(data_agent_level))
                 _list_bot_level_.append(module_agent.Test)
+
+    return _list_bot_level_, _list_per_level_
+
+
+## # # #hihinjit()
+def check_run_under_njit(agent, perData):
+    return True
+
+
+def numba_main_2(p0, num_game, per_player, level, *args):
+    num_bot = getAgentSize() - 1
+    list_other = np.array([-1] + [i+1 for i in range(num_bot)])
+    try: check_njit = check_run_under_njit(p0, per_player)
+    except: check_njit = False
+
+    load_agent(level, *args)
 
     if check_njit:
         return n_game_numba(p0, num_game, per_player, list_other,

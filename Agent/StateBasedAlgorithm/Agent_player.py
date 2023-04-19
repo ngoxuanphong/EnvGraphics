@@ -62,7 +62,7 @@ def Train(state,per):
             per[2][0][0][0] = 0
     return action, per
 
-#@njit
+##hihinjit()
 def Test(state, per):
     state_int = state.astype(np.int64)
     stateSize = getStateSize()
