@@ -278,6 +278,7 @@ def stepEnv(action,env_state, lv1, lv2, lv3):
             taken[id_action] += 1      # thêm nguyên liệu lấy trong turn
             # print('Lấy nguyên liệu:', id_action, 'Taken:',taken)
             s_taken = np.sum(taken)
+            env_state[155:160] = taken
 
             if s_taken == 1: # Chỉ còn đúng loại nl vừa lấy nhưng sl < 3
                 if b_stocks[id_action] < 3 and (np.sum(b_stocks[:5]) - b_stocks[id_action]) == 0:
@@ -289,10 +290,9 @@ def stepEnv(action,env_state, lv1, lv2, lv3):
                 check_phase3 = True
 
             if check_phase3:
-                if np.sum(cur_p[:6]) < 10:
+                env_state[155:160] = [0,0,0,0,0]
+                if np.sum(cur_p[:6]) <= 10:
                     env_state[100] += 1 # Sang turn mới
-                    env_state[155:160] = [0,0,0,0,0]
-            env_state[155:160] = taken
 
         elif 36 <= action and action < 42: #Trả nguyên liệu
             st_ = action - 36
@@ -301,7 +301,7 @@ def stepEnv(action,env_state, lv1, lv2, lv3):
 
             if np.sum(cur_p[:6]) <= 10: # Thỏa mãn điều kiện này thì sang turn mới
                 env_state[100] += 1 # Sang turn mới
-                env_state[155:160] = [0,0,0,0,0]
+                # env_state[155:160] = [0,0,0,0,0]
 
     env_state[107 + 12*p_id:119 + 12*p_id] = cur_p
     env_state[101:107] = b_stocks
@@ -335,14 +335,6 @@ def getValidActions(player_state_origin:np.int64):
     list_action_return[0] = 1
     check_action_0 = False
 
-    #Trả nguyên liệu
-    p_st_have_auto = p_state[P_START_STOCK:P_START_STOCK_COUNT]
-    sum_p_st_have_auto = sum(p_st_have_auto)
-    if sum_p_st_have_auto > 10:
-        list_action_return_stock = [i_+36 for i_ in range(6) if p_st_have_auto[i_] != 0]
-        list_action_return[0] = 0
-        list_action_return[np.array(list_action_return_stock)] = 1
-        return list_action_return.astype(np.float64)
 
     #Lấy nguyên liệu
     s_taken = np.sum(taken)
@@ -366,12 +358,21 @@ def getValidActions(player_state_origin:np.int64):
             list_action_return[np.array(temp_)] = 1
             check_action_0 = True
     elif s_taken == 0:
-        if len(temp_) > 0:
+        if len(temp_) > 0 and np.sum( p_state[P_START_STOCK:P_START_STOCK_COUNT]) <= 10:
             # list_action_return[0] = 0
             list_action_return[np.array(temp_)] = 1  
     if s_taken > 0:
         return list_action_return.astype(np.float64)
 
+    #Trả nguyên liệu
+    p_st_have_auto = p_state[P_START_STOCK:P_START_STOCK_COUNT]
+    sum_p_st_have_auto = sum(p_st_have_auto)
+    if sum_p_st_have_auto > 10:
+        list_action_return_stock = [i_+36 for i_ in range(6) if p_st_have_auto[i_] != 0]
+        list_action_return[0] = 0
+        list_action_return[np.array(list_action_return_stock)] = 1
+        return list_action_return.astype(np.float64)
+    
     # Kiểm tra 15 thẻ có thể mở, action từ [1:16]
     for id_card in range(12):
         card = normal_cards[TOTAL_INFOR_NORMAL_CARD*id_card: TOTAL_INFOR_NORMAL_CARD*(id_card+1)]

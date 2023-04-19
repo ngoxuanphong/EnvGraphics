@@ -46,7 +46,7 @@ class Params:
 
 sprites = Sprites()
 params = Params()
-_d_ = CARD_SIZE[0] * 0.2
+_d_ = int(CARD_SIZE[0] * 0.2)
 
 
 def draw_cards(bg, cards, s, y, back=False, faded=False):
@@ -67,6 +67,8 @@ def draw_cards(bg, cards, s, y, back=False, faded=False):
 
 def get_state_image(state=None):
     background = sprites.background.copy()
+    state = state.astype(np.int64)
+
     my_cards = np.where(state[0:52] == 1)[0]
 
     n = my_cards.shape[0]
@@ -91,7 +93,15 @@ def get_state_image(state=None):
     n = cur_cards.shape[0]
     w = CARD_SIZE[0] + _d_ * (n-1)
     s = params.center_card_x - 0.5*w
-    draw_cards(background, cur_cards, s, params.center_card_y)
+    y = params.center_card_y + int(CARD_SIZE[1]/1.9)
+    draw_cards(background, cur_cards, s, y)
+
+    cur_cards = np.where(state[104:156] == 1)[0]
+    n = cur_cards.shape[0]
+    w = CARD_SIZE[0] + _d_ * (n-1)
+    s = params.center_card_x - 0.5*w
+    y = params.center_card_y - int(CARD_SIZE[1]/1.9)
+    draw_cards(background, cur_cards, s, y)
 
     return background
 
