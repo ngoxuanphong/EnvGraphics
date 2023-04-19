@@ -5,6 +5,7 @@ from Base.Durak import _env
 IMG_PATH = SHORT_PATH + "Base/TLMN/playing_card_images/"
 BG_SIZE = (1680, 720)
 CARD_SIZE = (80, 112)
+SUIT_SIZE = (100, 100)
 
 
 class Sprites:
@@ -14,11 +15,14 @@ class Sprites:
         card_suits = ["Spade", "Club", "Diamond", "Heart"]
         self.cards = []
         self.card_name = []
+        path = 'Base/Durak/playing_card_images/'
         for value in card_values:
             for suit in card_suits:
                 self.cards.append(Image.open(IMG_PATH+f"{value}-{suit}.png").resize(CARD_SIZE))
                 self.card_name.append(f"{value}-{suit}")
 
+        self.img_suit = [Image.open(f'{path}{suit}.png').resize(SUIT_SIZE) for suit in card_suits]
+        
         self.card_back = Image.open(IMG_PATH+"Card_back.png").resize(CARD_SIZE)
         self.faded_card_back = self.card_back.copy()
         br = ImageEnhance.Brightness(self.faded_card_back)
@@ -102,6 +106,11 @@ def get_state_image(state=None):
     s = params.center_card_x - 0.5*w
     y = params.center_card_y - int(CARD_SIZE[1]/1.9)
     draw_cards(background, cur_cards, s, y)
+
+    x = int(BG_SIZE[0] * 0.19)
+    y = int(BG_SIZE[1]* 0.1)
+    id_trump = np.where(state[158:162] == 1)[0][0]
+    background.paste(sprites.img_suit[id_trump], (x, y))
 
     return background
 
