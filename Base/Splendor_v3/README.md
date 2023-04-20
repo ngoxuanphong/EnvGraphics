@@ -8,15 +8,12 @@
 
 ## Thứ tự ưu tiên các action
      - 1. -> Lấy thẻ taget
-     - 2. -> Lấy 2 nguyên liệu cùng loại cho thẻ đang cần
-     - 3. -> Lấy 3 nguyên liệu: (Theo thứ tự: Cần 3,2,1 nguyên liệu)
-     - 4. -> Úp thẻ taget
-     - 5. -> Lấy thẻ có nguyên liệu mặc định cần cho thẻ taget(Theo thứ tự thẻ cần ít nguyên liệu bỏ ra nhất)
-     - 6. -> Lấy nguyên liệu(Lấy được bao nhiêu thì lấy bấy nhiêu theo random(>1) nguyên liệu)
-     - 7. -> Lấy thẻ miễn phí
-     - 8. -> Lấy 2 nguyên liệu cùng loại mà có nguyên liệu bỏ ra
-     - 9. -> Lấy nguyên liệu trên bàn
-     - 10: -> Lấy thẻ cần bỏ ra số lượng nguyên liệu ít nhất
+     - 2. -> Lấy nguyên liệu đang cần cho thẻ taget(Không trả nguyên liệu)
+     - 3. -> Úp thẻ taget
+     - 4. -> Lấy thẻ có nguyên liệu mặc định cần cho thẻ taget(Theo thứ tự thẻ cần ít nguyên liệu bỏ ra nhất)
+     - 5. -> Lấy thẻ miễn phí
+     - 6. -> Lấy các nguyên liệu khác cho thẻ taget
+     - 7. -> Không làm được gì cả
 
 
 ## :bust_in_silhouette: P_state
