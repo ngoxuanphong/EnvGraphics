@@ -5,7 +5,7 @@ from Base.Splendor_v2 import _env
 NORMAL_CARD, NOBLE_CARD = _env.normal_cards_infor, _env.noble_cards_infor
 IMG_PATH = SHORT_PATH + "Base/Splendor_v2/playing_card_images/"
 
-tl = 1
+tl = 3
 BG_SIZE = (np.array([2048, 2384])/tl).astype(np.int64)
 BOARD_SIZE = (int(BG_SIZE[0]*16/9), BG_SIZE[1])
 CARD_SIZE = (np.array([300, 425])/(tl*0.81)).astype(np.int64)

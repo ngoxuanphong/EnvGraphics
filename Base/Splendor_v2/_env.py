@@ -362,6 +362,7 @@ def getValidActions(player_state_origin:np.int64):
             # list_action_return[0] = 0
             list_action_return[np.array(temp_)] = 1  
     if s_taken > 0:
+        list_action_return[0] = 0
         return list_action_return.astype(np.float64)
 
     #Trả nguyên liệu

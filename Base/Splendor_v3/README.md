@@ -9,7 +9,15 @@
 ## Thứ tự ưu tiên các action
      - Thẻ taget
 
-     - 1. -> Lấy thẻ
+     - 1. -> Lấy thẻ taget
+     - 2. -> Lấy 2 nguyên liệu cùng loại cho thẻ đang cần
+     - 3. -> Lấy 3 nguyên liệu: (Theo thứ tự: Cần 3,2,1 nguyên liệu)
+     - 4. -> Úp thẻ taget
+     - 5. -> Lấy thẻ có nguyên liệu mặc định cần cho thẻ taget(Theo thứ tự thẻ cần ít nguyên liệu bỏ ra nhất)
+     - 6. -> Lấy nguyên liệu(Lấy được bao nhiêu thì lấy bấy nhiêu theo random(>1) nguyên liệu)
+     - 7. -> Lấy thẻ miễn phí
+     - 8. -> Lấy 2 nguyên liệu cùng loại mà có nguyên liệu bỏ ra
+
      - 2. Nếu số nguyên liệu đang có <=7 và lấy được và có nguyên liệu để mua thẻ taget -> Lấy 3 nguyên liệu
      - 3. Nếu thẻ taget ở trên bàn và úp được -> úp thẻ
      - 4. Nếu trên bàn có thể lấy được thẻ có nguyên liệu mặc định cần cho thẻ taget -> Lấy thẻ đó với số lượng nguyên liệu bỏ ra ít nhất
