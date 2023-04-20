@@ -58,7 +58,7 @@ params = Params()
 _d_ = int(CARD_SIZE[0] * 0.2)
 
 
-def draw_cards(bg, cards, s, y, back=False, faded=False):
+def draw_cards(bg, cards, s, y, back=False, faded=False, main_card=False):
     n = cards.shape[0]
     y = round(y)
     if back:
@@ -69,9 +69,14 @@ def draw_cards(bg, cards, s, y, back=False, faded=False):
 
         for i in range(n):
             bg.paste(im, (round(s+_d_*i), y))
+        ImageDraw.Draw(bg).text((round(s+_d_*i), y), f'{n}', fill='white', font=sprites.font)
+        
     else:
         for i in range(n):
             bg.paste(sprites.cards[cards[i]], (round(s+_d_*i), y))
+        if main_card == True:
+            ImageDraw.Draw(bg).text((round(s+_d_*(n+4)), y), f'{n}', fill='white', font=sprites.font)
+        
 
 
 def get_state_image(state=None):
@@ -83,7 +88,7 @@ def get_state_image(state=None):
     n = my_cards.shape[0]
     w = CARD_SIZE[0] + _d_ * (n-1)
     x =  int(params.list_coords_0[0][0] - 0.5*w)
-    draw_cards(background, my_cards, x, params.list_coords_0[0][1], back=False, faded=False)
+    draw_cards(background, my_cards, x, params.list_coords_0[0][1], back=False, faded=False, main_card=True)
 
     # Draw other cards
     for k in range(1, 4):
