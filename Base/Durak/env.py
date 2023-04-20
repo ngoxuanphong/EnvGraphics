@@ -19,8 +19,12 @@ numba_main_2 = __env.numba_main_2
 def render(Agent, per_data, level, *args, max_temp_frame=100):
     list_agent, list_data = __env.load_agent(level, *args)
 
-    global __render
-    __render = __Render(Agent, per_data, list_agent, list_data, max_temp_frame)
+    if "__render" not in globals():
+        global __render
+        __render = __Render(Agent, per_data, list_agent, list_data, max_temp_frame)
+    else:
+        __render.__init__(Agent, per_data, list_agent, list_data, max_temp_frame)
+
     return __render.render()
 
 def get_data_from_visualized_match():

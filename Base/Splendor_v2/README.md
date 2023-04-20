@@ -34,11 +34,11 @@
                - [160:165]: Thông tin thẻ noble thứ 2
                - [165:170]: Thông tin thẻ noble thứ 3
                - [170:175]: Thông tin thẻ noble thứ 4
-     -   [175:208]:      3 thẻ úp trên tay, mỗi thẻ có 11 state gồm: [điểm, 5 state loại thẻ, 5 nguyên liệu mua]
+     -   [175:208]:      3 thẻ úp trên tay, mỗi thẻ có 11 state gồm: [điểm, 5 state loại thẻ, 5 nguyên liệu mua] (Thứ tự thẻ theo cấp độ level, có thể xem trong Base/Splendor_v2/playing_card_images/Cards)
                - [175:186]: Thông tin thẻ úp thứ 0
                - [186:197]: Thông tin thẻ úp thứ 1
                - [197:208]: Thông tin thẻ úp thứ 2
-     -   [208: 213]:     5 nguyên liệu đã lấy trong phase lấy nguyên liệu
+     -   [208: 213]:     5 nguyên liệu đã lấy trong phase lấy nguyên liệu(Không có ý nghĩa trong game này)
      -   [213:216]:      điểm của 3 người chơi còn lại
      -   [216:219]:      Có thể úp được thẻ ẩn không, (1, 0). Gồm có 3 thẻ ẩn của 3 loại
      -   [219]:          Số thẻ có thể úp trên bàn

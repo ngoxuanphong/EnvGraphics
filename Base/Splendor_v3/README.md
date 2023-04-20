@@ -7,13 +7,17 @@
      -   [12:15]: Chọn 3 thẻ úp trên tay
 
 ## Thứ tự ưu tiên các action
-     - 1. -> Lấy thẻ taget
-     - 2. -> Lấy nguyên liệu đang cần cho thẻ taget(Không trả nguyên liệu)
-     - 3. -> Úp thẻ taget
-     - 4. -> Lấy thẻ có nguyên liệu mặc định cần cho thẻ taget(Theo thứ tự thẻ cần ít nguyên liệu bỏ ra nhất)
-     - 5. -> Lấy thẻ miễn phí
-     - 6. -> Lấy các nguyên liệu khác cho thẻ taget
-     - 7. -> Không làm được gì cả
+     - 1. -> Lấy thẻ target
+     - 2. -> Lấy nguyên liệu đang cần cho thẻ target
+               - Lấy 2 nguyên liệu giống nhau(Nguyên liệu thẻ target cần >= 2)
+               - lấy 3 nguyên liệu khác nhau trong đó có ít nhất 1 nguyên liệu trong thẻ target
+               - Mặc định không trả nguyên liệu
+     - 3. -> Úp thẻ target
+     - 4. -> Lấy thẻ có nguyên liệu mặc định là nguyên liệu cần cho thẻ target(Thẻ bỏ ra ít nguyên liệu nhất)
+     - 5. -> Lấy thẻ miễn phí (Thẻ không mất nguyên liệu)
+     - 6. -> Lấy random nguyên liệu
+     - 7. -> Lấy thẻ trên bàn (Bỏ ra ít nguyên liệu nhất)
+     - 7. -> Không làm được gì cả (Skip turn)
 
 
 ## :bust_in_silhouette: P_state
@@ -39,7 +43,7 @@
                - [160:165]: Thông tin thẻ noble thứ 2
                - [165:170]: Thông tin thẻ noble thứ 3
                - [170:175]: Thông tin thẻ noble thứ 4
-     -   [175:208]:      3 thẻ úp trên tay, mỗi thẻ có 11 state gồm: [điểm, 5 state loại thẻ, 5 nguyên liệu mua]
+     -   [175:208]:      3 thẻ úp trên tay, mỗi thẻ có 11 state gồm: [điểm, 5 state loại thẻ, 5 nguyên liệu mua] (Thứ tự thẻ theo cấp độ level, có thể xem trong Base/Splendor_v2/playing_card_images/Cards)
                - [175:186]: Thông tin thẻ úp thứ 0
                - [186:197]: Thông tin thẻ úp thứ 1
                - [197:208]: Thông tin thẻ úp thứ 2
@@ -61,13 +65,13 @@
 
 
 ## Thứ tự ưu tiên các action cũ
-     - 1. -> Lấy thẻ taget
-     - 2. Nếu số nguyên liệu đang có <=7 và lấy được và có nguyên liệu để mua thẻ taget -> Lấy 3 nguyên liệu
-     - 3. Nếu thẻ taget ở trên bàn và úp được -> úp thẻ
-     - 4. Nếu trên bàn có thể lấy được thẻ có nguyên liệu mặc định cần cho thẻ taget -> Lấy thẻ đó với số lượng nguyên liệu bỏ ra ít nhất
-     - 5. Nếu có nguyên liệu cần để mua thẻ taget thì sẽ lấy nguyên liệu đó -> Lấy nguyên liệu
+     - 1. -> Lấy thẻ target
+     - 2. Nếu số nguyên liệu đang có <=7 và lấy được và có nguyên liệu để mua thẻ target -> Lấy 3 nguyên liệu
+     - 3. Nếu thẻ target ở trên bàn và úp được -> úp thẻ
+     - 4. Nếu trên bàn có thể lấy được thẻ có nguyên liệu mặc định cần cho thẻ target -> Lấy thẻ đó với số lượng nguyên liệu bỏ ra ít nhất
+     - 5. Nếu có nguyên liệu cần để mua thẻ target thì sẽ lấy nguyên liệu đó -> Lấy nguyên liệu
      - 6. Nếu có thẻ miễn phí trên bàn -> Lấy thẻ miễn phí
-     - 7. Nếu có nguyên liệu cho thẻ taget và trên bàn nguyên liệu đó có >= 4 nguyên liệu  -> lấy 2 nguyên liệu đó
+     - 7. Nếu có nguyên liệu cho thẻ target và trên bàn nguyên liệu đó có >= 4 nguyên liệu  -> lấy 2 nguyên liệu đó
      - 8. Nếu tổng số nguyên liệu <= 8, và có thể lấy 2 nguyên liệu bất kỳ trên bàn -> Lấy 2 nguyên liệu
      - 9. Nếu mua được nguyên liệu nào trên bàn thì lấy nguyên liệu đó
      - 10. Lấy thẻ bất kỳ trên bàn với số lượng nguyên liệu bỏ ra ít nhất
