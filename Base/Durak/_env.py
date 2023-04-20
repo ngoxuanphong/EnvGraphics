@@ -229,6 +229,8 @@ def one_game_numba(p0,pIdOrder,per_player,per1,per2,per3,p1,p2,p3):
             # # print('ok')
     return win, per_player
 
+
+        
 #hihinjit()
 def n_game_numba(p0, num_game, per_player, list_other, per1, per2, per3, p1, p2, p3):
     win = 0

@@ -1,8 +1,9 @@
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageDraw, ImageFont
 import numpy as np
 from setup import SHORT_PATH
 from Base.Durak import _env
 IMG_PATH = SHORT_PATH + "Base/TLMN/playing_card_images/"
+tl = 3
 BG_SIZE = (1680, 720)
 CARD_SIZE = (80, 112)
 SUIT_SIZE = (100, 100)
@@ -10,14 +11,18 @@ SUIT_SIZE = (100, 100)
 
 class Sprites:
     def __init__(self) -> None:
+        self.font=ImageFont.truetype("Base/SushiGo/font/FreeMonoBoldOblique.ttf", int(120/tl))
+        self.font_max=ImageFont.truetype("Base/SushiGo/font/FreeMonoBoldOblique.ttf", int(200/tl))
+        self.font2=ImageFont.truetype("Base/SushiGo/font/FreeMonoBoldOblique.ttf", int(60/tl))
+
         self.background = Image.open(IMG_PATH+"background.png").resize(BG_SIZE)
         card_values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A",]
         card_suits = ["Spade", "Club", "Diamond", "Heart"]
         self.cards = []
         self.card_name = []
         path = 'Base/Durak/playing_card_images/'
-        for value in card_values:
-            for suit in card_suits:
+        for suit in card_suits:
+            for value in card_values:
                 self.cards.append(Image.open(IMG_PATH+f"{value}-{suit}.png").resize(CARD_SIZE))
                 self.card_name.append(f"{value}-{suit}")
 
@@ -73,13 +78,14 @@ def get_state_image(state=None):
     background = sprites.background.copy()
     state = state.astype(np.int64)
 
+    # Draw my card
     my_cards = np.where(state[0:52] == 1)[0]
-
     n = my_cards.shape[0]
     w = CARD_SIZE[0] + _d_ * (n-1)
     x =  int(params.list_coords_0[0][0] - 0.5*w)
     draw_cards(background, my_cards, x, params.list_coords_0[0][1], back=False, faded=False)
 
+    # Draw other cards
     for k in range(1, 4):
         n = state[162+k]
         w = CARD_SIZE[0] + _d_ * (n-1)
@@ -92,7 +98,7 @@ def get_state_image(state=None):
 
         draw_cards(background, np.full(int(n), 0), s, params.list_coords_0[k][1], True)
 
-
+    # card defend successful
     cur_cards = np.where(state[52:104] == 1)[0]
     n = cur_cards.shape[0]
     w = CARD_SIZE[0] + _d_ * (n-1)
@@ -100,6 +106,7 @@ def get_state_image(state=None):
     y = params.center_card_y + int(CARD_SIZE[1]/1.9)
     draw_cards(background, cur_cards, s, y)
 
+    # card have to defend this round
     cur_cards = np.where(state[104:156] == 1)[0]
     n = cur_cards.shape[0]
     w = CARD_SIZE[0] + _d_ * (n-1)
@@ -107,11 +114,18 @@ def get_state_image(state=None):
     y = params.center_card_y - int(CARD_SIZE[1]/1.9)
     draw_cards(background, cur_cards, s, y)
 
+    #Draw trump card
     x = int(BG_SIZE[0] * 0.19)
     y = int(BG_SIZE[1]* 0.1)
     id_trump = np.where(state[158:162] == 1)[0][0]
     background.paste(sprites.img_suit[id_trump], (x, y))
+    ImageDraw.Draw(background).text((int(x*1.35), int(y*1.65)), f'{state[156:158]}', fill='white', font=sprites.font)
 
+    #Draw count card on table
+    x = int(BG_SIZE[0] * 0.75)
+    y = int(BG_SIZE[1]* 0.1)
+    background.paste(sprites.card_back, (x, y))
+    ImageDraw.Draw(background).text((x , y + int(CARD_SIZE[1]*0.2)), f'{state[162]}', fill='black', font=sprites.font_max)
     return background
 
 
@@ -141,33 +155,36 @@ def get_env_components():
     return env_components
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+value = np.array(['2','3','4','5','6','7','8','9','10','J','Q','K','A'])
+type_card = np.array(['♤','♧','♢','♡'])
+# @njit
+def get_card(id):
+        if id <52:
+            v = id%13
+            t = id//13
+            return f'{value[v]}{type_card[t]}'
+        else:
+            return 'skip'
+        
 def get_main_player_state(env_components: Env_components, list_agent, list_data, action=None):
-    state = _env.getAgentState(env_components.env)
     if not action is None:
             _env.stepEnv(action, env_components.env)
+        
 
     env_components.winner = _env.checkEnded(env_components.env)
+    turn = 0
     if env_components.winner == -1:
         while True:
+
+            # env = env_components.env
+            # for i in range(1,5):
+            #     print(f'P{i}:',end=" ")
+            #     for card in np.where(env[0:52]==i)[0]:
+            #         print(get_card(card),end=" ")
+            #     print("")
+            # print(f'Turn {turn}; Trump card: {get_card(int(env[52]))}; Defend id: {env[58]}; Attack id :{env[54:57][int(env[59])]};',end=" ")
+            # turn += 1
+
             if env_components.env[53] == 1:
                 p_idx = int(env_components.env[58] - 1)
             else:
@@ -191,7 +208,7 @@ def get_main_player_state(env_components: Env_components, list_agent, list_data,
     else:
         my_idx = np.where(env_components.list_other == -1)[0][0]
         env = env_components.env.copy()
-        env[80] = my_idx
+        env[80] = 1
         env[53] = 1
         env[58] = my_idx * 1.0 + 1.0
         state = _env.getAgentState(env)
