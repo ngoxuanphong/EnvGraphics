@@ -119,7 +119,13 @@ def get_state_image(state=None):
     y = int(BG_SIZE[1]* 0.1)
     id_trump = np.where(state[158:162] == 1)[0][0]
     background.paste(sprites.img_suit[id_trump], (x, y))
-    ImageDraw.Draw(background).text((int(x*1.35), int(y*1.65)), f'{state[156:158]}', fill='white', font=sprites.font)
+
+    #attack or defense
+    if state[156] == 1:
+        mode_action = 'attack'
+    else:
+        mode_action = 'defense'
+    ImageDraw.Draw(background).text((int(x*1.35), int(y*1.65)), f'{mode_action}', fill='white', font=sprites.font)
 
     #Draw count card on table
     x = int(BG_SIZE[0] * 0.75)
