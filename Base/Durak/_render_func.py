@@ -69,7 +69,7 @@ def draw_cards(bg, cards, s, y, back=False, faded=False, main_card=False):
 
         for i in range(n):
             bg.paste(im, (round(s+_d_*i), y))
-        ImageDraw.Draw(bg).text((round(s+_d_*i), y), f'{n}', fill='white', font=sprites.font)
+        ImageDraw.Draw(bg).text((round(s+_d_*(n+1)), y), f'{n}', fill='white', font=sprites.font)
         
     else:
         for i in range(n):
